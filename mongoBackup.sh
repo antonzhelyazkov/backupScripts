@@ -30,6 +30,11 @@ while true; do
 	esac
 done
 
+ownScriptName=$(basename "$0" | sed -e 's/.sh$//g')
+scriptLog="/var/log/$ownScriptName.log"
+hostname=$(hostname)
+serverName=$(hostname -s)
+
 
 function logPrint() {
 logMessage=$1
@@ -67,3 +72,5 @@ if [ $exitCommand -eq 1 ]; then
         exit
 fi
 }
+
+logPrint "INFO qweqwe" 0 0
