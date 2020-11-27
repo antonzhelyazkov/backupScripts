@@ -20,7 +20,7 @@ mongoBin="/usr/bin/mongo"
 
 while true; do
 	case "$1" in
-		-c | --config ) cinfigFile="$2"; shift ;;
+		-c | --config ) configFile="$2"; shift ;;
 		-v | --verbose ) verbose=1; shift ;;
 		-h | --help ) HELP=true; shift ;;
 		-l | --local-copy ) localCopy=1; shift ;; 
@@ -32,6 +32,8 @@ done
 
 ownScriptName=$(basename "$0" | sed -e 's/.sh$//g')
 scriptLog="/var/log/$ownScriptName.log"
+nagiosLog="/var/log/$ownScriptName.nagios"
+lastRun="/var/log/$ownScriptName.last"
 hostname=$(hostname)
 serverName=$(hostname -s)
 
@@ -73,4 +75,68 @@ if [ $exitCommand -eq 1 ]; then
 fi
 }
 
-logPrint "INFO qweqwe" 0 0
+########################################################
+
+logPrint START 0 0
+
+if [ -f $nagiosLog ]; then
+        logPrint "ERROR file $nagiosLog exists EXIT!" 1 1
+else
+        echo $$ > $nagiosLog
+fi
+
+hash jq 2>/dev/null
+jqCheck=$?
+if [ $jqCheck -ne 0 ]
+then
+	rm -f $nagiosLog
+	logPrint "ERROR jq not found!" 1 1
+fi
+
+if [ -f $configFile ]
+then
+	logPrint "INFO config file $configFile found" 0 0
+else
+	rm -f $nagiosLog
+	logPrint "ERROR config file $configFile not found" 1 1
+fi
+
+############ FTP Connect ############
+
+ftpHost=$(jq -r .ftp.ftp_host $configFile)
+ftpUser=$(jq -r .ftp.ftp_user $configFile)
+ftpPass=$(jq -r .ftp.ftp_pass $configFile)
+
+hash ftp 2>/dev/null
+ftpCheck=$?
+if [ $ftpCheck -ne 0 ]
+then
+        rm -f $nagiosLog
+        logPrint "ERROR ftp not found!" 1 1
+fi
+
+echo 'exit' | ftp ftp://$ftpUser:$ftpPass@$ftpHost/
+if [ $? -ne 0 ]
+then
+	logPrint "ERROR Failed to connect to ftp host" 0 1
+else
+	logPrint "INFO connected to ftp host" 0 0
+fi
+
+############ FTP Connect ############
+
+readarray -t mongoDatabases < <$(jq -c .mongo $configFile)
+for db in mongoDatabases
+do
+	echo $db
+done
+
+########################################################
+
+if grep -Fq "ERROR" $nagiosLog ; then
+        logPrint "ERRORS are found. Must not remove $nagiosLog" 0 0
+else
+        rm -f $nagiosLog
+        logPrint "FINISH" 0 0
+fi
+echo $dateTs > $lastRun
