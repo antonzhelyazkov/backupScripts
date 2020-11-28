@@ -130,7 +130,7 @@ fi
 
 ############ validate JSON ############
 
-dstDirString=$(jq -r .tmpDir "$configFile")
+dstDirString=$(jq -r .dstDirBase "$configFile")
 dstDirBase=$(addDirectorySlash "$dstDirString")
 echo "$dstDirBase"
 
