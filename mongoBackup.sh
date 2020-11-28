@@ -77,8 +77,6 @@ fi
 }
 
 function decodeBase64() {
-  echo "${1}"
-  echo "${2}"
   echo "${1}" | base64 --decode | jq -r "${2}"
 }
 
@@ -137,7 +135,9 @@ tmpArr=$(jq -c .mongo "$configFile")
 
 for row in $(echo "$tmpArr" | jq -r '.[] | @base64')
 do
-   decodeBase64 "$row" '.db'
+   tmpDBName=decodeBase64 "$row" '.db'
+   # shellcheck disable=SC2154
+   echo "qweqwe" "$tmpDBName"
 done
 
 #readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
