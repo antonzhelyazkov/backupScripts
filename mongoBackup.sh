@@ -34,9 +34,6 @@ ownScriptName=$(basename "$0" | sed -e 's/.sh$//g')
 scriptLog="/var/log/$ownScriptName.log"
 nagiosLog="/var/log/$ownScriptName.nagios"
 lastRun="/var/log/$ownScriptName.last"
-hostname=$(hostname)
-serverName=$(hostname -s)
-
 
 function logPrint() {
 logMessage=$1
@@ -130,9 +127,27 @@ fi
 
 ############ validate JSON ############
 
+############ variables ############
+
 dstDirString=$(jq -r .dstDirBase "$configFile")
 dstDirBase=$(addDirectorySlash "$dstDirString")
-echo "$dstDirBase"
+serverName=$(jq -r .hostname "$configFile")
+ftpRemotePath="/$serverName-mongo-backup/"
+rateLimit="2048K"
+# Speed is in bytes per second. 0 - means unlimited
+ftpUploadSpeed=0
+ftpDownloadSpeed=0
+keepRemoteBackupDays=5
+remoteBackupDays=$(date +%Y%m%d%H%M -d "$keepRemoteBackupDays day ago")
+oneYearAgo=$(date +%Y%m%d%H%M -d "1 year ago")
+dateToday=$(date +%d)
+
+mongoDir="$dstDirBase$serverName"
+currentBackupDir="$mongoDir$(date +%Y%m%d%H%M)"
+
+echo $currentBackupDir
+
+############ variables ############
 
 ############ FTP Connect ############
 
