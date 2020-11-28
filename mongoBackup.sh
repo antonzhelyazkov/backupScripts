@@ -81,6 +81,10 @@ function decodeBase64() {
   echo "$val"
 }
 
+function addDirectorySlash(){
+  echo "$1"
+}
+
 ########################################################
 
 logPrint START 0 0
@@ -118,6 +122,10 @@ else
 fi
 
 ############ validate JSON ############
+
+# shellcheck disable=SC2046
+tmpDir=$(addDirectorySlash $(jq -r .tmpDir "$configFile"))
+echo "$tmpDir"
 
 ############ FTP Connect ############
 
