@@ -127,11 +127,14 @@ fi
 
 ############ FTP Connect ############
 
-readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
-for db in mongoDatabases
-do
-	echo $db
-done
+sample=$(jq -c .mongo "$configFile")
+echo "${sample}" | jq -c '.[]'
+
+#readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
+#for db in mongoDatabases
+#do
+#	echo $db
+#done
 
 ########################################################
 
