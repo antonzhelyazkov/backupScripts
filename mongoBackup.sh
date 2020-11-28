@@ -133,10 +133,7 @@ dstDirString=$(jq -r .dstDirBase "$configFile")
 dstDirBase=$(addDirectorySlash "$dstDirString")
 serverName=$(jq -r .hostname "$configFile")
 ftpRemotePath="/$serverName-mongo-backup/"
-rateLimit="2048K"
 # Speed is in bytes per second. 0 - means unlimited
-ftpUploadSpeed=0
-ftpDownloadSpeed=0
 keepRemoteBackupDays=5
 remoteBackupDays=$(date +%Y%m%d%H%M -d "$keepRemoteBackupDays day ago")
 oneYearAgo=$(date +%Y%m%d%H%M -d "1 year ago")
@@ -144,8 +141,6 @@ dateToday=$(date +%d)
 
 mongoDir=$(addDirectorySlash "$dstDirBase$serverName")
 currentBackupDir="$mongoDir$(date +%Y%m%d%H%M)"
-
-echo "$currentBackupDir"
 
 ############ variables ############
 
@@ -173,6 +168,13 @@ else
 fi
 
 ############ FTP Connect ############
+
+if mkdir -p "$currentBackupDir"
+then
+  logPrint "INFO directory $currentBackupDir was created" 0 0
+else
+  logPrint "ERROR in directory create $currentBackupDir" 1 1
+fi
 
 tmpArr=$(jq -c .mongo "$configFile")
 
