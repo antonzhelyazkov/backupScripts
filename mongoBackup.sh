@@ -128,11 +128,10 @@ fi
 ############ FTP Connect ############
 
 tmpArr=$(jq -c .mongo "$configFile")
-echo "$tmpArr" | jq -c '.[]| @base64'
 
 for row in $(echo "$tmpArr" | jq -r '.[] | @base64')
 do
-  echo "$row"
+  echo "$row" | base64 --decode | jq -r "${1}"
 done
 
 #readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
