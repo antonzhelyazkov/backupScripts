@@ -136,9 +136,10 @@ tmpArr=$(jq -c .mongo "$configFile")
 
 for row in $(echo "$tmpArr" | jq -r '.[] | @base64')
 do
-   decodeBase64 "$row" '.db'
-   decodeBase64 "$row" '.user'
-   decodeBase64 "$row" '.pass'
+   dbName=$(decodeBase64 "$row" '.db')
+   dbUser=$(decodeBase64 "$row" '.user')
+   dbPass=$(decodeBase64 "$row" '.pass')
+   echo "$dbName" "$dbUser" "$dbPass"
 done
 
 #readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
