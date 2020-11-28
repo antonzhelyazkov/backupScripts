@@ -136,7 +136,7 @@ tmpArr=$(jq -c .mongo "$configFile")
 for row in $(echo "$tmpArr" | jq -r '.[] | @base64')
 do
    decodeBase64 "$row" '.db'
-   decodeBase64 "$row" '.name'
+   decodeBase64 "$row" '.user'
    decodeBase64 "$row" '.pass'
 done
 
