@@ -186,7 +186,8 @@ do
    dbUser=$(decodeBase64 "$row" '.user')
    dbPass=$(decodeBase64 "$row" '.pass')
    dumpCommand="$mongodumpBin --host $mongoHost --port 27017 -u $dbUser -p $dbPass --db $dbName --gzip --out $currentBackupDir"
-   echo "$dumpCommand"
+   $dumpCommand
+   echo $?
 done
 
 ########################################################
