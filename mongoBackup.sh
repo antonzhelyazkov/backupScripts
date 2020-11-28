@@ -130,6 +130,16 @@ fi
 tmpArr=$(jq -c .mongo "$configFile")
 echo "$tmpArr" | jq -c '.[]| @base64'
 
+for row in $(echo "$tmpArr" | jq -r '.[] | @base64'); do
+    _jq() {
+     echo "${row}" | base64 --decode | jq -r "${1}"
+    }
+
+   # shellcheck disable=SC2046
+   # shellcheck disable=SC2005
+   echo $(_jq '.name')
+done
+
 #readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
 #for db in mongoDatabases
 #do
