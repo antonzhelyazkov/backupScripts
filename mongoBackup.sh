@@ -127,8 +127,8 @@ fi
 
 ############ FTP Connect ############
 
-sample=$(jq -c .mongo "$configFile")
-echo "${sample}" | jq -c '.[]'
+tmpArr=$(jq -c .mongo "$configFile")
+echo "$tmpArr" | jq -c '.[]| @base64'
 
 #readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
 #for db in mongoDatabases
