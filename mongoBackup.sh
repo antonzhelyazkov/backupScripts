@@ -130,9 +130,9 @@ fi
 
 ############ validate JSON ############
 
-tmpDirString=$(jq -r .tmpDir "$configFile")
-tmpDir=$(addDirectorySlash "$tmpDirString")
-echo "$tmpDir"
+dstDirString=$(jq -r .tmpDir "$configFile")
+dstDirBase=$(addDirectorySlash "$dstDirString")
+echo "$dstDirBase"
 
 ############ FTP Connect ############
 
