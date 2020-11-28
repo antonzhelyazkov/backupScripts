@@ -82,7 +82,7 @@ function decodeBase64() {
 }
 
 function addDirectorySlash(){
-  grep -qE "/$" < "$1"
+  cat "$1" | grep -qE "/$"
   checkSlash=$?
   echo "QEWQEQWE $checkSlash"
   if [ "$checkSlash" == 0 ]
