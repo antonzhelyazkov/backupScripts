@@ -57,8 +57,8 @@ else
         fi
 fi
 
-# shellcheck disable=SC2046
-echo $(date) "$logMessage" >> "$scriptLog"
+currentDate=$(date)
+echo "$currentDate $logMessage" >> "$scriptLog"
 
 if [ $verbose -eq 1 ]; then
         echo "$logMessage"
@@ -188,12 +188,17 @@ tmpArr=$(jq -c .mongo "$configFile")
 
 for row in $(echo "$tmpArr" | jq -r '.[] | @base64')
 do
-   dbName=$(decodeBase64 "$row" '.db')
-   dbUser=$(decodeBase64 "$row" '.user')
-   dbPass=$(decodeBase64 "$row" '.pass')
-   dumpCommand="$mongodumpBin --host $mongoHost --port 27017 -u $dbUser -p $dbPass --db $dbName --gzip --out $currentBackupDir"
-   $dumpCommand
-   echo $?
+  dbName=$(decodeBase64 "$row" '.db')
+  dbUser=$(decodeBase64 "$row" '.user')
+  dbPass=$(decodeBase64 "$row" '.pass')
+  dumpCommand="$mongodumpBin --host $mongoHost --port 27017 -u $dbUser -p $dbPass --db $dbName --gzip --out $currentBackupDir"
+  $dumpCommand
+  if [ $? == 0 ]
+  then
+    logPrint "INFO backup successful $mongoHost user $dbUser db $dbName" 0 0
+  else
+    logPrint "ERROR in backup $mongoHost user $dbUser db $dbName" 1 0
+  fi
 done
 
 ########################################################
