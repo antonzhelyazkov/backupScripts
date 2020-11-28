@@ -16,7 +16,7 @@ localBackupDays=$(date +%Y%m%d%H%M -d "$localCopyDays day ago")
 verbose=0
 yearCopy=0
 HELP=false
-mongoBin="/usr/bin/mongo"
+mongodumpBin="/usr/bin/mongodump"
 
 while true; do
 	case "$1" in
@@ -30,6 +30,7 @@ while true; do
 	esac
 done
 
+dateTs=$(date +%s)
 ownScriptName=$(basename "$0" | sed -e 's/.sh$//g')
 scriptLog="/var/log/$ownScriptName.log"
 nagiosLog="/var/log/$ownScriptName.nagios"
@@ -129,6 +130,7 @@ fi
 
 ############ variables ############
 
+mongoHost=$(jq -r .mongo_host "$configFile")
 dstDirString=$(jq -r .dstDirBase "$configFile")
 dstDirBase=$(addDirectorySlash "$dstDirString")
 serverName=$(jq -r .hostname "$configFile")
@@ -183,16 +185,17 @@ do
    dbName=$(decodeBase64 "$row" '.db')
    dbUser=$(decodeBase64 "$row" '.user')
    dbPass=$(decodeBase64 "$row" '.pass')
-   echo "$dbName" "$dbUser" "$dbPass"
+   dumpCommand="$mongodumpBin --host $mongoHost --port 27017 -u $dbUser -p $dbPass --db $dbName --gzip --out $currentBackupDir"
+   echo "$dumpCommand"
 done
 
 ########################################################
 
 if grep -Fq "ERROR" "$nagiosLog" ; then
-        logPrint "ERRORS are found. Must not remove $nagiosLog" 0 0
+  logPrint "ERRORS are found. Must not remove $nagiosLog" 0 0
 else
-        rm -f "$nagiosLog"
-        logPrint "FINISH" 0 0
+  rm -f "$nagiosLog"
+  logPrint "FINISH" 0 0
 fi
-# shellcheck disable=SC2154
+
 echo "$dateTs" > "$lastRun"
