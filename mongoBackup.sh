@@ -107,6 +107,18 @@ else
 	logPrint "ERROR config file $configFile not found" 1 1
 fi
 
+############ validate JSON ############
+
+validateConfig=$(jq -r type < "$configFile")
+if [ "$validateConfig" == "object" ]
+then
+  logPrint "INFO config file is correct" 0 0
+else
+  logPrint "ERROR config file $configFile is not correct" 1 1
+fi
+
+############ validate JSON ############
+
 ############ FTP Connect ############
 
 ftpHost=$(jq -r .ftp.ftp_host "$configFile")
