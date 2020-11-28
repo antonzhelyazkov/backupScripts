@@ -16,7 +16,6 @@ localBackupDays=$(date +%Y%m%d%H%M -d "$localCopyDays day ago")
 verbose=0
 yearCopy=0
 HELP=false
-mongodumpBin="/usr/bin/mongodump"
 
 while true; do
 	case "$1" in
@@ -143,6 +142,13 @@ dateToday=$(date +%d)
 
 mongoDir=$(addDirectorySlash "$dstDirBase$serverName")
 currentBackupDir="$mongoDir$(date +%Y%m%d%H%M)"
+
+if [ verbose == 0 ]
+then
+  mongodumpBin="/usr/bin/mongodump"
+else
+  mongodumpBin="/usr/bin/mongodump --quiet"
+fi
 
 ############ variables ############
 
