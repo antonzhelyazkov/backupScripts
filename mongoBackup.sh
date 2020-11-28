@@ -132,6 +132,7 @@ tmpArr=$(jq -c .mongo "$configFile")
 for row in $(echo "$tmpArr" | jq -r '.[] | @base64')
 do
   echo "$row" | base64 --decode
+  echo
 done
 
 #readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
