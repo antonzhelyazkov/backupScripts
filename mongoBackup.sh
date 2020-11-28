@@ -135,7 +135,7 @@ do
      echo "${row}" | base64 --decode | jq -r "${1}"
     }
 
-   echo $(_jq '.db')
+   echo _jq '.db'
    echo $(_jq '.user')
    echo $(_jq '.pass')
 done
