@@ -136,6 +136,8 @@ do
     }
 
    echo $(_jq '.db')
+   echo $(_jq '.user')
+   echo $(_jq '.pass')
 done
 
 #readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
