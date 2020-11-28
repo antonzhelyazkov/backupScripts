@@ -148,9 +148,7 @@ then
         logPrint "ERROR ftp not found!" 1 1
 fi
 
-echo 'exit' | ftp ftp://"$ftpUser":"$ftpPass"@"$ftpHost"/
-# shellcheck disable=SC2181
-if [ $? -ne 0 ]
+if echo 'exit' | ftp ftp://"$ftpUser":"$ftpPass"@"$ftpHost"/
 then
 	logPrint "ERROR Failed to connect to ftp host" 0 1
 else
