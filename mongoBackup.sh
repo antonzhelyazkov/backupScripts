@@ -84,7 +84,6 @@ function decodeBase64() {
 function addDirectorySlash(){
   echo "$1" | grep -qE "/$"
   checkSlash=$?
-  echo "QEWQEQWE $checkSlash"
   if [ "$checkSlash" == 0 ]
   then
     echo "$1"
@@ -131,8 +130,8 @@ fi
 
 ############ validate JSON ############
 
-# shellcheck disable=SC2046
-tmpDir=$(addDirectorySlash $(jq -r .tmpDir "$configFile"))
+tmpDirString=$(jq -r .tmpDir "$configFile")
+tmpDir=$(addDirectorySlash "$tmpDirString")
 echo "$tmpDir"
 
 ############ FTP Connect ############
