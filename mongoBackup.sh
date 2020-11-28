@@ -142,7 +142,7 @@ remoteBackupDays=$(date +%Y%m%d%H%M -d "$keepRemoteBackupDays day ago")
 oneYearAgo=$(date +%Y%m%d%H%M -d "1 year ago")
 dateToday=$(date +%d)
 
-mongoDir="$dstDirBase/$serverName"
+mongoDir=$(addDirectorySlash "$dstDirBase$serverName")
 currentBackupDir="$mongoDir$(date +%Y%m%d%H%M)"
 
 echo "$currentBackupDir"
