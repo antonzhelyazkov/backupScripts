@@ -40,7 +40,7 @@ serverName=$(hostname -s)
 
 function logPrint() {
 logMessage=$1
-if [ -z $2 ]; then
+if [ -z "$2" ]; then
         nagios=0
 else
         if [[  $2 =~ ^[0-1]{1}$ ]]; then
@@ -50,7 +50,7 @@ else
         fi
 fi
 
-if [ -z $3 ]; then
+if [ -z "$3" ]; then
         exitCommand=0
 else
         if [[  $3 =~ ^[0-1]{1}$ ]]; then
@@ -60,14 +60,15 @@ else
         fi
 fi
 
-echo $(date) $logMessage >> $scriptLog
+# shellcheck disable=SC2046
+echo $(date) "$logMessage" >> "$scriptLog"
 
 if [ $verbose -eq 1 ]; then
-        echo $logMessage
+        echo "$logMessage"
 fi
 
 if [ $nagios -eq 1 ]; then
-        echo $logMessage >> $nagiosLog
+        echo "$logMessage" >> "$nagiosLog"
 fi
 
 if [ $exitCommand -eq 1 ]; then
@@ -79,43 +80,44 @@ fi
 
 logPrint START 0 0
 
-if [ -f $nagiosLog ]; then
+if [ -f "$nagiosLog" ]; then
         logPrint "ERROR file $nagiosLog exists EXIT!" 1 1
 else
-        echo $$ > $nagiosLog
+        echo $$ > "$nagiosLog"
 fi
 
 hash jq 2>/dev/null
 jqCheck=$?
 if [ $jqCheck -ne 0 ]
 then
-	rm -f $nagiosLog
+	rm -f "$nagiosLog"
 	logPrint "ERROR jq not found!" 1 1
 fi
 
-if [ -f $configFile ]
+if [ -f "$configFile" ]
 then
 	logPrint "INFO config file $configFile found" 0 0
 else
-	rm -f $nagiosLog
+	rm -f "$nagiosLog"
 	logPrint "ERROR config file $configFile not found" 1 1
 fi
 
 ############ FTP Connect ############
 
-ftpHost=$(jq -r .ftp.ftp_host $configFile)
-ftpUser=$(jq -r .ftp.ftp_user $configFile)
-ftpPass=$(jq -r .ftp.ftp_pass $configFile)
+ftpHost=$(jq -r .ftp.ftp_host "$configFile")
+ftpUser=$(jq -r .ftp.ftp_user "$configFile")
+ftpPass=$(jq -r .ftp.ftp_pass "$configFile")
 
 hash ftp 2>/dev/null
 ftpCheck=$?
 if [ $ftpCheck -ne 0 ]
 then
-        rm -f $nagiosLog
+        rm -f "$nagiosLog"
         logPrint "ERROR ftp not found!" 1 1
 fi
 
-echo 'exit' | ftp ftp://$ftpUser:$ftpPass@$ftpHost/
+echo 'exit' | ftp ftp://"$ftpUser":"$ftpPass"@"$ftpHost"/
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]
 then
 	logPrint "ERROR Failed to connect to ftp host" 0 1
@@ -125,7 +127,7 @@ fi
 
 ############ FTP Connect ############
 
-readarray -t mongoDatabases < <$(jq -c .mongo $configFile)
+readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
 for db in mongoDatabases
 do
 	echo $db
@@ -133,10 +135,11 @@ done
 
 ########################################################
 
-if grep -Fq "ERROR" $nagiosLog ; then
+if grep -Fq "ERROR" "$nagiosLog" ; then
         logPrint "ERRORS are found. Must not remove $nagiosLog" 0 0
 else
-        rm -f $nagiosLog
+        rm -f "$nagiosLog"
         logPrint "FINISH" 0 0
 fi
-echo $dateTs > $lastRun
+# shellcheck disable=SC2154
+echo "$dateTs" > "$lastRun"
