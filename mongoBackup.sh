@@ -76,6 +76,10 @@ if [ $exitCommand -eq 1 ]; then
 fi
 }
 
+function decodeBase64() {
+  echo "${1}" | base64 --decode | jq -r "${2}"
+}
+
 ########################################################
 
 logPrint START 0 0
@@ -131,13 +135,7 @@ tmpArr=$(jq -c .mongo "$configFile")
 
 for row in $(echo "$tmpArr" | jq -r '.[] | @base64')
 do
- function foo() {
-     echo "${row}" | base64 --decode | jq -r "${1}"
-    }
-
-   echo foo '.db'
-   echo $(foo '.user')
-   echo $(foo '.pass')
+   echo foo "$row" '.db'
 done
 
 #readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
