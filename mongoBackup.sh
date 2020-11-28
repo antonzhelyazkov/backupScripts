@@ -169,12 +169,6 @@ do
    echo "$dbName" "$dbUser" "$dbPass"
 done
 
-#readarray -t mongoDatabases < <(jq -c .mongo "$configFile")
-#for db in mongoDatabases
-#do
-#	echo $db
-#done
-
 ########################################################
 
 if grep -Fq "ERROR" "$nagiosLog" ; then
