@@ -138,8 +138,10 @@ keepRemoteBackupDays=5
 remoteBackupDays=$(date +%Y%m%d%H%M -d "$keepRemoteBackupDays day ago")
 oneYearAgo=$(date +%Y%m%d%H%M -d "1 year ago")
 
-if [ ! -d "$dstDirBase" ]
+if [ -d "$dstDirBase" ]
 then
+  logPrint "INFO dst dir found $dstDirBase" 0 0
+else
   logPrint "ERROR dst dir not found $dstDirBase" 1 1
 fi
 
