@@ -9,20 +9,17 @@ fi
 
 eval set -- "$OPTS"
 
-localCopy=1
-localCopyPath="/var/tmp"
-localCopyDays=1
-localBackupDays=$(date +%Y%m%d%H%M -d "$localCopyDays day ago")
+#localCopy=1
+#localCopyPath="/var/tmp"
+#localCopyDays=1
+#localBackupDays=$(date +%Y%m%d%H%M -d "$localCopyDays day ago")
 verbose=0
 yearCopy=0
-HELP=false
 
 while true; do
 	case "$1" in
 		-c | --config ) configFile="$2"; shift ;;
 		-v | --verbose ) verbose=1; shift ;;
-		-h | --help ) HELP=true; shift ;;
-		-l | --local-copy ) localCopy=1; shift ;; 
 		-y | --year-copy ) yearCopy=1; shift ;;
 		-- ) shift; break ;;
 		* ) break ;;
@@ -142,7 +139,7 @@ if [ -d "$dstDirBase" ]
 then
   logPrint "INFO dst dir found $dstDirBase" 0 0
 else
-  logPrint "ERROR dst dir not found $dstDirBase" 1 1
+  logPrint "ERROR dst dir not found $dstDirBase. param dstDirBase missing from $configFile" 1 1
 fi
 
 mongoDir=$(addDirectorySlash "$dstDirBase$serverName")
@@ -150,9 +147,9 @@ currentBackupDir="$mongoDir$(date +%Y%m%d%H%M)"
 
 if [ $verbose == 0 ]
 then
-  mongodumpBin="/usr/bin/mongodump"
+  mongodumpBin="/usr/bin/mongodump  --quiet"
 else
-  mongodumpBin="/usr/bin/mongodump --quiet"
+  mongodumpBin="/usr/bin/mongodump"
 fi
 
 ############ variables ############
@@ -225,13 +222,14 @@ if [ $checkUploadExit -ne 0 ]; then
 	logPrint "ERROR in upload" 1 1
 else
 	logPrint "ftp transfer finished successfully $currentBackupDir" 0 0
+	rm -rf "$currentBackupDir"
 fi
 
 for currentRemoteDirectory in $(curl -s -u "$ftpUser":"$ftpPass" ftp://"$ftpHost"/"$serverName"/ -X MLSD | grep 'type=dir' | cut -d';' -f8)
 do
 	if [ $yearCopy -eq 0 ];
 	then
-		logPrint "Week Copy"
+		logPrint "Week Copy" 0 0
 		if [[ $currentRemoteDirectory =~ ^[0-9]{12}$ ]]; then
 			if [ "$currentRemoteDirectory" -lt "$remoteBackupDays" ]; then
 				if [ ! -z "$currentRemoteDirectory" ]; then
