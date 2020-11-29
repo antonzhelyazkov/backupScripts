@@ -140,7 +140,7 @@ oneYearAgo=$(date +%Y%m%d%H%M -d "1 year ago")
 
 if [ ! -d "$dstDirBase" ]
 then
-  logPrint "ERROR dst dir not found $dstDirBase"
+  logPrint "ERROR dst dir not found $dstDirBase" 1 1
 fi
 
 mongoDir=$(addDirectorySlash "$dstDirBase$serverName")
