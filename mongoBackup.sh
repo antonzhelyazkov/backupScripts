@@ -137,7 +137,6 @@ serverName=$(jq -r .hostname "$configFile")
 keepRemoteBackupDays=5
 remoteBackupDays=$(date +%Y%m%d%H%M -d "$keepRemoteBackupDays day ago")
 oneYearAgo=$(date +%Y%m%d%H%M -d "1 year ago")
-dateToday=$(date +%d)
 
 mongoDir=$(addDirectorySlash "$dstDirBase$serverName")
 currentBackupDir="$mongoDir$(date +%Y%m%d%H%M)"
@@ -202,6 +201,8 @@ done
 
 ########################################################
 
+
+###################### ftp transfer ####################
 hash lftp 2>/dev/null
 lftpCheck=$?
 if [ $lftpCheck -ne 0 ]
@@ -216,7 +217,7 @@ checkUploadExit=$?
 if [ $checkUploadExit -ne 0 ]; then
 	logPrint "ERROR in upload" 1 1
 else
-	logPrint "ftp transfer finished successfully" 0 0
+	logPrint "ftp transfer finished successfully $currentBackupDir" 0 0
 fi
 
 for currentRemoteDirectory in $(curl -s -u "$ftpUser":"$ftpPass" ftp://"$ftpHost"/"$serverName"/ -X MLSD | grep 'type=dir' | cut -d';' -f8)
@@ -258,19 +259,21 @@ do
 			fi
 			if [ "$currentRemoteDirectory" -lt "$remoteBackupDays" ] && [ "$dateInDirectory" -ne 01 ]
 			then
-				  logPrint "local config days"
-          if [ ! -z "$currentRemoteDirectory" ]; then
-            logPrint "remove $serverName/$currentRemoteDirectory" 0 0
-            lftp -u "$ftpUser":"$ftpPass" "$ftpHost" -e "rm -r $serverName/$currentRemoteDirectory; bye"
-            checkRemoteRemove=$?
-            if [ $checkRemoteRemove -ne 0 ]; then
-              logPrint "ERROR could not remove remote directory $serverName/$currentRemoteDirectory" 1 0
-            fi
+				logPrint "local config days"
+        if [ ! -z "$currentRemoteDirectory" ]; then
+          logPrint "remove $serverName/$currentRemoteDirectory" 0 0
+          lftp -u "$ftpUser":"$ftpPass" "$ftpHost" -e "rm -r $serverName/$currentRemoteDirectory; bye"
+          checkRemoteRemove=$?
+          if [ $checkRemoteRemove -ne 0 ]; then
+            logPrint "ERROR could not remove remote directory $serverName/$currentRemoteDirectory" 1 0
           fi
+        fi
       fi
 		fi
 	fi
 done
+
+###################### ftp transfer ####################
 
 if grep -Fq "ERROR" "$nagiosLog" ; then
   logPrint "ERRORS are found. Must not remove $nagiosLog" 0 0
