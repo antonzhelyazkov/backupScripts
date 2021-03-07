@@ -112,7 +112,7 @@ if not backup_dir['status']:
 
 current_date = datetime.datetime.now()
 print(current_date)
-current_date_string = current_date.strftime("%Y%m%d%H%M%s")
+current_date_string = current_date.strftime("%Y%m%d%H%M%S")
 print(current_date_string)
 
 if process_nagios_file(NAGIOS_FILE):
