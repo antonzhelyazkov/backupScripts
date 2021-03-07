@@ -104,7 +104,10 @@ if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, "ERROR in hostname %s" % HOSTNAME)
     sys.exit(1)
 
-print(CONFIG_DATA['backup_dir'])
+backup_dir = mkdir(CONFIG_DATA['backup_dir'])
+if not backup_dir['status']:
+    print_log(VERBOSE, backup_dir['msg'])
+    sys.exit(1)
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
