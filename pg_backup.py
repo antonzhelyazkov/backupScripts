@@ -52,7 +52,7 @@ def add_slash(directory: str) -> str:
 
 def process_pid_file(pid_f: str) -> bool:
     if os.path.isfile(pid_f):
-        print_log(VERBOSE, f"ERROR pid file exists {pid_f}")
+        # print_log(VERBOSE, f"ERROR pid file exists {pid_f}")
         return False
     else:
         try:
