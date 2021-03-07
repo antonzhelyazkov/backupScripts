@@ -61,7 +61,7 @@ def process_pid_file(pid_f: str) -> bool:
             f.close()
             return True
         except IOError as e:
-            print_log(VERBOSE, f'ERROR {e}')
+            print_log(VERBOSE, 'ERROR {e}')
             return False
 
 
