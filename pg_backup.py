@@ -52,7 +52,7 @@ def add_slash(directory: str) -> str:
 
 def process_pid_file(pid_f: str) -> bool:
     if os.path.isfile(pid_f):
-        print_log(VERBOSE, 'ERROR pid file exists')
+        print_log(VERBOSE, "ERROR pid file exists %s" % pid_f)
         return False
     else:
         try:
@@ -61,7 +61,7 @@ def process_pid_file(pid_f: str) -> bool:
             f.close()
             return True
         except IOError as e:
-            print_log(VERBOSE, 'ERROR {e}')
+            print_log(VERBOSE, 'ERROR %s' % e)
             return False
 
 
@@ -74,18 +74,8 @@ def process_nagios_file(nagios_f: str) -> bool:
         f.close()
         return True
     except IOError as e:
-        print_log(VERBOSE, f"ERROR {e}")
+        print_log(VERBOSE, 'ERROR %s' % e)
         return False
-
-
-def file_names(input_dict, suffix_dict) -> dict:
-    file_name = input_dict['media_name'] + "_" + input_dict['product_name'] + "_" + input_dict['issue_name']
-    files_dict = {}
-    for item_suffix in suffix_dict:
-        file_name_current = file_name + f"_{suffix_dict[item_suffix]}.mp4"
-        files_dict[suffix_dict[item_suffix]] = file_name_current
-
-    return files_dict
 
 
 def mkdir(directory: str) -> dict:
@@ -95,7 +85,7 @@ def mkdir(directory: str) -> dict:
                     'msg': f"INFO Directory {directory} created"}
     except OSError as e:
         out_dict = {'status': False,
-                    'msg': f"ERROR {e}"}
+                    'msg': 'ERROR %s' % e}
 
     return out_dict
 
@@ -113,7 +103,6 @@ if not process_pid_file(PID_FILE):
 if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
     sys.exit(1)
-
 
 print(CONFIG_DATA)
 
