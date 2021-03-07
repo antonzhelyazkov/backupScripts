@@ -1,3 +1,4 @@
+import datetime
 import getopt
 import json
 import logging
@@ -108,6 +109,11 @@ backup_dir = mkdir(CONFIG_DATA['backup_dir'])
 if not backup_dir['status']:
     print_log(VERBOSE, backup_dir['msg'])
     sys.exit(1)
+
+current_date = datetime.datetime.now()
+print(current_date)
+current_date_string = current_date.strftime("%Y%m")
+print(current_date_string)
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
