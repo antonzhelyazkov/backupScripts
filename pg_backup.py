@@ -82,7 +82,7 @@ def mkdir(directory: str) -> dict:
     try:
         os.makedirs(directory, exist_ok=True)
         out_dict = {'status': True,
-                    'msg': f"INFO Directory {directory} created"}
+                    'msg': "INFO Directory %s created" % directory}
     except OSError as e:
         out_dict = {'status': False,
                     'msg': 'ERROR %s' % e}
@@ -101,7 +101,7 @@ if not process_pid_file(PID_FILE):
     sys.exit(1)
 
 if HOSTNAME is None or HOSTNAME == '':
-    print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
+    print_log(VERBOSE, "ERROR in hostname %s" % HOSTNAME)
     sys.exit(1)
 
 print(CONFIG_DATA)
@@ -109,4 +109,4 @@ print(CONFIG_DATA)
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
 else:
-    print_log(VERBOSE, f"ERROR could not write to {NAGIOS_FILE}")
+    print_log(VERBOSE, "ERROR could not write to %s" % NAGIOS_FILE)
