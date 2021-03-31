@@ -1,0 +1,25 @@
+{
+  "tmp_dir": "/mnt/store/reoback",
+  "log_dir": "/var/log/",
+  "ftp_login": {
+    "ftp_host": "10.10.10.10",
+    "ftp_user": "reoback",
+    "ftp_pass": "topsercret",
+    "ftp_port": 21
+  },
+  "backup": [
+    {
+      "name": "first_test",
+      "path": "/etc",
+      "excludes": [
+        "/etc/cron.d",
+        "/etc/sudoers.d/"
+      ]
+    },
+    {
+      "name": "second_test",
+      "path": "/var/tmp/",
+      "excludes": []
+    }
+  ]
+}
