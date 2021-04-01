@@ -78,9 +78,12 @@ def process_pid_file(pid_f: str) -> bool:
 
 
 def check_dirs_exist(dirs: list) -> dict:
-    out_data = {}
+    out_data = {"status": True}
+    err_dirs = []
     for item in dirs:
-        print(item)
+        if not os.path.isdir(item):
+            out_data['status'] = False
+            out_data['err_dirs'] = err_dirs.append(item)
 
     return out_data
 
@@ -100,7 +103,8 @@ DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA['pid_
 for item_dir in CONFIG_DATA['backup']:
     DIRS_EXISTS.append(item_dir['path'])
     DIRS_EXISTS.extend(item_dir['excludes'])
-check_dirs_exist(DIRS_EXISTS)
+
+print(check_dirs_exist(DIRS_EXISTS))
 
 
 if HOSTNAME is None or HOSTNAME == '':
