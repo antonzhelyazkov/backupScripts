@@ -83,7 +83,10 @@ def check_dirs_exist(dirs: list) -> dict:
     for item in dirs:
         if not os.path.isdir(item):
             out_data['status'] = False
-            out_data['err_dirs'] = err_dirs.append(item)
+            err_dirs.append(item)
+
+    if len(err_dirs) > 0:
+        out_data['err'] = err_dirs
 
     return out_data
 
