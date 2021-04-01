@@ -77,6 +77,14 @@ def process_pid_file(pid_f: str) -> bool:
             return False
 
 
+def check_dirs_exist(dirs: list) -> dict:
+    out_data = {}
+    for item in dirs:
+        print(item)
+
+    return out_data
+
+
 ########################################
 
 config_open = open(CONFIG_FILE, encoding='utf-8')
@@ -88,7 +96,9 @@ NAGIOS_FILE = add_slash(CONFIG_DATA['pid_file_path']) + SCRIPT_NAME[0] + ".nagio
 if not process_pid_file(PID_FILE):
     sys.exit(1)
 
-print(SCRIPT_NAME, PID_FILE)
+DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA[''], CONFIG_DATA['pid_file_path']]
+check_dirs_exist(DIRS_EXISTS)
+
 
 if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
