@@ -96,7 +96,7 @@ NAGIOS_FILE = add_slash(CONFIG_DATA['pid_file_path']) + SCRIPT_NAME[0] + ".nagio
 if not process_pid_file(PID_FILE):
     sys.exit(1)
 
-DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA[''], CONFIG_DATA['pid_file_path']]
+DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA['pid_file_path']]
 check_dirs_exist(DIRS_EXISTS)
 
 
