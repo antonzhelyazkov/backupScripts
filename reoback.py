@@ -88,6 +88,8 @@ NAGIOS_FILE = add_slash(CONFIG_DATA['pid_file_path']) + SCRIPT_NAME[0] + ".nagio
 if not process_pid_file(PID_FILE):
     sys.exit(1)
 
+print(SCRIPT_NAME, PID_FILE)
+
 if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
     sys.exit(1)
