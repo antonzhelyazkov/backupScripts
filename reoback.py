@@ -97,6 +97,8 @@ if not process_pid_file(PID_FILE):
     sys.exit(1)
 
 DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA['pid_file_path']]
+for item_dir in CONFIG_DATA['backup']:
+    print(item_dir['path'])
 check_dirs_exist(DIRS_EXISTS)
 
 
