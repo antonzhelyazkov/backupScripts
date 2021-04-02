@@ -3,7 +3,8 @@ import tarfile
 from pathlib import Path
 
 dir_q: str = "/opt/neterra-cdn-nodejs/"
-excludes = [""]
+excludes = ["/opt/neterra-cdn-nodejs/modules/cdn-video-appender/node_modules",
+            "/opt/neterra-cdn-nodejs/modules/cdn-video-appender/ffmpeg_test"]
 
 
 # with tarfile.open('new_archive.tar.gz', 'w') as archive:
@@ -11,7 +12,7 @@ excludes = [""]
 #         archive.add(i, filter=lambda x: x if x.name.endswith('.txt') else None)
 #     archive.list()
 
-def walk_files(directory: str):
+def walk_files(directory: str) -> list:
     all_files = []
     for item in os.listdir(directory):
         full_path = os.path.join(directory, item)
@@ -23,9 +24,21 @@ def walk_files(directory: str):
     return all_files
 
 
+def remove_excludes(file_list: list, excludes_list: list) -> list:
+    filtered_files = []
+    for item_all in file_list:
+        for item_exclude in excludes_list:
+            if item_exclude not in item_all:
+                filtered_files.append(item_all)
+
+    return filtered_files
+
+
 all_f = walk_files(dir_q)
+filtered_f = remove_excludes(all_f, excludes)
 print(all_f)
 print(len(all_f))
+print(len(filtered_f))
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for i in all_f:
