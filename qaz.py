@@ -43,6 +43,6 @@ print(len(all_f))
 print(len(filtered_f))
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
-    for i in all_f:
+    for i in filtered_f:
         archive.add(i)
     archive.list()
