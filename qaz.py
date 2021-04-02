@@ -3,8 +3,7 @@ import tarfile
 from pathlib import Path
 
 dir_q: str = "/opt/neterra-cdn-nodejs/"
-excludes = ["opt/neterra-cdn-nodejs/modules/cdn-video-appender/ffmpeg_test",
-            "node_modules"]
+excludes = ["node_module"]
 
 
 # with tarfile.open('new_archive.tar.gz', 'w') as archive:
