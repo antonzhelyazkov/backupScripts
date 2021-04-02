@@ -3,7 +3,7 @@ import tarfile
 from pathlib import Path
 
 dir_q: str = "/usr/local/neterratv-scripts/"
-excludes = ["v2wm"]
+excludes = ["v2wm", "wm-py"]
 
 
 # with tarfile.open('new_archive.tar.gz', 'w') as archive:
@@ -27,7 +27,7 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
     for element in file_list:
         for exclude in excludes_list:
             if exclude in element:
-                print(element)
+                print("rem", element)
                 file_list.remove(element)
                 print(len(file_list))
             else:
