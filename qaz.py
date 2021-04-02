@@ -2,8 +2,8 @@ import os
 import tarfile
 from pathlib import Path
 
-dir_q: str = "/opt/neterra-cdn-nodejs/"
-excludes = ["node_module"]
+dir_q: str = "/opt/neterra-cdn-nodejs/modules/cdn-video-appender/node_modules/"
+excludes = ["vorpal"]
 
 
 # with tarfile.open('new_archive.tar.gz', 'w') as archive:
