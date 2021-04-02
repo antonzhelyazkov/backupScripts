@@ -29,8 +29,6 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
             if exclude in element:
                 print("rem", element)
                 file_list.remove(element)
-            else:
-                print(element)
 
     return file_list
 
@@ -38,8 +36,8 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
 all_f = walk_files(dir_q)
 filtered_f = remove_excludes(all_f, excludes)
 # print(all_f)
-print(len(all_f))
-print(len(filtered_f))
+print(all_f)
+print(filtered_f)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for i in filtered_f:
