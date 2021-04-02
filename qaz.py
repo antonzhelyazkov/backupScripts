@@ -19,4 +19,4 @@ def walk_files(directory: str):
             print(full_path)
 
 
-
+walk_files(dir_q)
