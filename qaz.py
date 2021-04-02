@@ -34,9 +34,9 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
 
 
 all_f = walk_files(dir_q)
+print(all_f)
 filtered_f = remove_excludes(all_f, excludes)
 # print(all_f)
-print(all_f)
 print(filtered_f)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
