@@ -32,6 +32,7 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
                 pass
             else:
                 filtered_files.append(item_all)
+            excludes_list.remove(item_exclude)
 
     return filtered_files
 
