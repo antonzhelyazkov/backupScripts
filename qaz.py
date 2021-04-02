@@ -30,6 +30,8 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
                 print(element)
                 file_list.remove(element)
                 print(len(file_list))
+            else:
+                print(element)
 
     return file_list
 
@@ -43,4 +45,4 @@ print(len(filtered_f))
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for i in filtered_f:
         archive.add(i)
-    archive.list()
+#    archive.list()
