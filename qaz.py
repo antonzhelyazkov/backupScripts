@@ -3,7 +3,7 @@ import tarfile
 from pathlib import Path
 
 dir_q: str = "/opt/neterra-cdn-nodejs/modules/cdn-video-appender/node_modules/"
-excludes = ["vorpal"]
+excludes = ["vorpal", "neterra-cdn-nodejs"]
 
 
 # with tarfile.open('new_archive.tar.gz', 'w') as archive:
