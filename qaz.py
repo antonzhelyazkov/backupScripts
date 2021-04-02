@@ -28,10 +28,9 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
     filtered_files = []
     for item_all in file_list:
         for item_exclude in excludes_list:
+            print(item_exclude)
             if item_exclude not in item_all:
                 filtered_files.append(item_all)
-            else:
-                print(item_all)
 
     return filtered_files
 
