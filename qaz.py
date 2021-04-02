@@ -11,12 +11,16 @@ dir_q: str = "/opt/neterra-cdn-nodejs/"
 #     archive.list()
 
 def walk_files(directory: str):
+    all_files = []
     for item in os.listdir(directory):
         full_path = os.path.join(directory, item)
         if os.path.isdir(full_path):
             walk_files(full_path)
         else:
-            print(full_path)
+            all_files.append(full_path)
+
+    return all_files
 
 
-walk_files(dir_q)
+all_f = walk_files(dir_q)
+print(all_f)
