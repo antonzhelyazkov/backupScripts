@@ -10,12 +10,15 @@ dir_q: str = "/opt/neterra-cdn-nodejs/"
 #         archive.add(i, filter=lambda x: x if x.name.endswith('.txt') else None)
 #     archive.list()
 
-def walk_files(directory: str):
-    for item in os.listdir(directory):
-        if os.path.isdir(item):
-            walk_files(item)
-        else:
-            print(item)
+# def walk_files(directory: str):
+#     for item in os.listdir(directory):
+#         if os.path.isdir(item):
+#             walk_files(item)
+#         else:
+#             print(item)
 
 
-walk_files(dir_q)
+for path in os.listdir(dir_q):
+    full_path = os.path.join(dir_q, path)
+    if os.path.isfile(full_path):
+        print(full_path)
