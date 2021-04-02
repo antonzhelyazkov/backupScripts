@@ -23,25 +23,13 @@ def walk_files(directory: str) -> list:
     return all_files
 
 
-def remove_excludes(file_list: list, excludes_list: list) -> list:
-    for element in file_list:
-        for exclude in excludes_list:
-            print(element, exclude)
-            if exclude in element:
-                print("rem", element)
-                file_list.remove(element)
-        continue
-
-    return file_list
+def ads(asd):
+    print(f"qweqwe {asd}")
 
 
 all_f = walk_files(dir_q)
-print(len(all_f))
-filtered_f = remove_excludes(walk_files(dir_q), excludes)
-print(len(all_f))
-print(len(filtered_f))
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
-    for i in filtered_f:
-        archive.add(i)
+    for i in all_f:
+        archive.add(i, filter=ads)
 #    archive.list()
