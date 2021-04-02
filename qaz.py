@@ -12,7 +12,10 @@ dir_q: str = "/opt/neterra-cdn-nodejs/"
 
 def walk_files(directory: str):
     for item in os.listdir(directory):
-        print(item)
+        if os.path.isdir(item):
+            walk_files(item)
+        else:
+            print(item)
 
 
 walk_files(dir_q)
