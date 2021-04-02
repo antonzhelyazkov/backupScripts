@@ -2,7 +2,8 @@ import os
 import tarfile
 from pathlib import Path
 
-dir_q: str = "/opt/neterra-cdn-nodejs/modules/cdn-video-appender/config/"
+dir_q: str = "/opt/neterra-cdn-nodejs/"
+excludes = [""]
 
 
 # with tarfile.open('new_archive.tar.gz', 'w') as archive:
