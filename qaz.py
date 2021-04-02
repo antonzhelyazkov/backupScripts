@@ -29,7 +29,6 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
             if exclude in element:
                 print("rem", element)
                 file_list.remove(element)
-                print(len(file_list))
             else:
                 print(element)
 
