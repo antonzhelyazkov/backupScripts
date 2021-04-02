@@ -24,3 +24,4 @@ def walk_files(directory: str):
 
 all_f = walk_files(dir_q)
 print(all_f)
+print(len(all_f))
