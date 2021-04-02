@@ -26,13 +26,11 @@ def walk_files(directory: str) -> list:
 
 def remove_excludes(file_list: list, excludes_list: list) -> list:
     filtered_files = []
-    for item_all in file_list:
-        for item_exclude in excludes_list:
-            if item_exclude in item_all:
-                pass
-            else:
-                filtered_files.append(item_all)
-            excludes_list.remove(item_exclude)
+    for exclude in excludes_list:
+        for file in file_list:
+            if exclude not in file:
+                filtered_files.append(file)
+        file_list = filtered_files
 
     return filtered_files
 
