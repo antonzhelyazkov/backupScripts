@@ -24,10 +24,10 @@ def walk_files(directory: str) -> list:
 
 
 def ads(asd):
-    if any(qwer in  asd.name for qwer in excludes):
+    if any(qwer in asd.name for qwer in excludes):
         return None
     else:
-        return asd.name
+        return asd
 
 
 all_f = walk_files(dir_q)
