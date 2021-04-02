@@ -24,7 +24,10 @@ def walk_files(directory: str) -> list:
 
 
 def ads(asd):
-    print(f"qweqwe {asd}")
+    for iss in asd:
+        print(iss, asd[iss])
+
+    return asd
 
 
 all_f = walk_files(dir_q)
