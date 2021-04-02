@@ -24,9 +24,7 @@ def walk_files(directory: str) -> list:
 
 
 def ads(asd):
-    for iss in asd:
-        print(iss, asd[iss])
-
+    print(asd.name)
     return asd
 
 
