@@ -26,6 +26,7 @@ def walk_files(directory: str) -> list:
 def remove_excludes(file_list: list, excludes_list: list) -> list:
     for element in file_list:
         for exclude in excludes_list:
+            print(element, exclude)
             if exclude in element:
                 print("rem", element)
                 file_list.remove(element)
