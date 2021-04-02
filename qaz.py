@@ -38,7 +38,7 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
 
 all_f = walk_files(dir_q)
 filtered_f = remove_excludes(all_f, excludes)
-print(all_f)
+# print(all_f)
 print(len(all_f))
 print(len(filtered_f))
 
