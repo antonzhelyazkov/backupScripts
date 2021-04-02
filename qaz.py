@@ -30,7 +30,7 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
             if exclude in element:
                 print("rem", element)
                 file_list.remove(element)
-                # continue
+                break
 
     return file_list
 
