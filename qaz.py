@@ -31,7 +31,7 @@ def remove_excludes(file_list: list, excludes_list: list) -> list:
             if item_exclude not in item_all:
                 filtered_files.append(item_all)
             else:
-                print("qweqwe")
+                print(item_all)
 
     return filtered_files
 
