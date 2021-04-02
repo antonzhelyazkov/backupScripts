@@ -38,7 +38,7 @@ all_f = walk_files(dir_q)
 print(len(all_f))
 filtered_f = remove_excludes(walk_files(dir_q), excludes)
 print(len(all_f))
-print(filtered_f)
+print(len(filtered_f))
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for i in filtered_f:
