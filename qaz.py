@@ -24,8 +24,11 @@ def walk_files(directory: str) -> list:
 
 
 def ads(asd):
-    print(asd.name)
-    return asd
+    for item in excludes:
+        if item in asd.name:
+            return None
+        else:
+            return asd
 
 
 all_f = walk_files(dir_q)
@@ -33,4 +36,4 @@ all_f = walk_files(dir_q)
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for i in all_f:
         archive.add(i, filter=ads)
-#    archive.list()
+    archive.list()
