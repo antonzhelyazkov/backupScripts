@@ -4,7 +4,8 @@ from pathlib import Path
 
 dir_q: str = "/opt/neterra-cdn-nodejs/"
 excludes = ["opt/neterra-cdn-nodejs/modules/cdn-video-appender/node_modules",
-            "opt/neterra-cdn-nodejs/modules/cdn-video-appender/ffmpeg_test"]
+            "opt/neterra-cdn-nodejs/modules/cdn-video-appender/ffmpeg_test",
+            "node_modules"]
 
 
 # with tarfile.open('new_archive.tar.gz', 'w') as archive:
