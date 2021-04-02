@@ -3,7 +3,7 @@ import tarfile
 from pathlib import Path
 
 dir_q: str = "/usr/local/neterratv-scripts/"
-excludes = ["v2wm", "wm-py", "neterratv-scripts"]
+excludes = ["v2wm", "wm-py"]
 
 
 # with tarfile.open('new_archive.tar.gz', 'w') as archive:
@@ -24,10 +24,10 @@ def walk_files(directory: str) -> list:
 
 
 def ads(asd):
-    for item in excludes:
-        if item in asd.name:
-            return None
-    return None
+    if any(qwer in  asd.name for qwer in excludes):
+        return None
+    else:
+        return asd.name
 
 
 all_f = walk_files(dir_q)
