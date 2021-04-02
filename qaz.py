@@ -25,3 +25,8 @@ def walk_files(directory: str):
 all_f = walk_files(dir_q)
 print(all_f)
 print(len(all_f))
+
+with tarfile.open('new_archive.tar.gz', 'w') as archive:
+    for i in all_f:
+        archive.add(i)
+    archive.list()
