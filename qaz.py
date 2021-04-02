@@ -15,7 +15,7 @@ def walk_files(directory: str):
     for item in os.listdir(directory):
         full_path = os.path.join(directory, item)
         if os.path.isdir(full_path):
-            walk_files(full_path)
+            all_files.extend(walk_files(full_path))
         else:
             all_files.append(full_path)
 
