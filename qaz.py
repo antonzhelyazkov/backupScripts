@@ -27,8 +27,7 @@ def ads(asd):
     for item in excludes:
         if item in asd.name:
             return None
-        else:
-            return asd
+    return None
 
 
 all_f = walk_files(dir_q)
