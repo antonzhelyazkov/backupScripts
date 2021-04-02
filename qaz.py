@@ -3,7 +3,7 @@ import tarfile
 from pathlib import Path
 
 dir_q: str = "/opt/neterra-cdn-nodejs/"
-excludes = ["/opt/neterra-cdn-nodejs/modules/cdn-video-appender/node_modules/",
+excludes = ["opt/neterra-cdn-nodejs/modules/cdn-video-appender/node_modules",
             "opt/neterra-cdn-nodejs/modules/cdn-video-appender/ffmpeg_test"]
 
 
@@ -26,8 +26,9 @@ def walk_files(directory: str) -> list:
 
 def remove_excludes(file_list: list, excludes_list: list) -> list:
     for element in file_list:
-        if element in excludes_list:
-            file_list.remove(element)
+        for exclude in excludes_list:
+            if exclude in element:
+                file_list.remove(element)
 
     return file_list
 
