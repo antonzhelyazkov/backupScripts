@@ -2,7 +2,7 @@ import os
 import tarfile
 
 dir_q: str = "/opt/neterra-cdn-nodejs/modules/cdn-video-appender/"
-excludes = ["v2wm", "wm-py", "node_modules"]
+excludes = ["v2wm", "opt/neterra-cdn-nodejs/modules/cdn-video-appender/node_modules/", "node_modules"]
 
 
 def walk_files(directory: str) -> list:
