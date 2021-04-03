@@ -140,7 +140,7 @@ for item_arch in CONFIG_DATA['backup']:
     files_arr = walk_files(item_arch['path'])
     with tarfile.open(f"{item_arch['name']}.tar.gz", 'w:gz') as archive:
         for file in files_arr:
-            archive.add(file, filter=excl(file))
+            archive.add(file, filter=excl())
         archive.list()
 
 if process_nagios_file(NAGIOS_FILE):
