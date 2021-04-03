@@ -28,6 +28,6 @@ def ads(asd):
 all_f = walk_files(dir_q)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
-    for iqq in all_f:
-        archive.add(iqq, exclude=ads(iqq))
+    for i in all_f:
+        archive.add(i, filter=ads(i))
     archive.list()
