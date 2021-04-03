@@ -141,7 +141,7 @@ for item_arch in CONFIG_DATA['backup']:
     with tarfile.open(f"{item_arch['name']}.tar.gz", 'w:gz') as archive:
         for file in files_arr:
             print(file)
-            archive.add(file, exclude=excl(file))
+            archive.add(file, exclude=excl)
         archive.list()
 
 if process_nagios_file(NAGIOS_FILE):
