@@ -18,18 +18,15 @@ def walk_files(directory: str) -> list:
 
 
 def ads(asd):
-    # if any(qwer in asd.name for qwer in excludes):
-    #     return None
-    # else:
-
-    print(type(asd))
-
-    return asd
+    if any(qwer in asd.name for qwer in excludes):
+        return None
+    else:
+        return asd
 
 
 all_f = walk_files(dir_q)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
-    for i in all_f:
-        archive.add(i, filter=ads)
+    for file in all_f:
+        archive.add(file, filter=ads)
     archive.list()
