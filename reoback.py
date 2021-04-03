@@ -137,6 +137,7 @@ if HOSTNAME is None or HOSTNAME == '':
     sys.exit(1)
 
 for item_arch in CONFIG_DATA['backup']:
+    print(item_arch)
     files_arr = walk_files(item_arch['path'])
     with tarfile.open(f"{item_arch['name']}.tar.gz", 'w:gz') as archive:
         for file in files_arr:
