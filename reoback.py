@@ -92,23 +92,31 @@ def check_dirs_exist(dirs: list) -> dict:
     return out_data
 
 
-def walk_files(directory: str) -> list:
-    all_files = []
-    for item in os.listdir(directory):
-        full_path = os.path.join(directory, item)
-        if os.path.isdir(full_path):
-            all_files.extend(walk_files(full_path))
-        else:
-            all_files.append(full_path)
+# def walk_files(directory: str) -> list:
+#     all_files = []
+#     for item in os.listdir(directory):
+#         full_path = os.path.join(directory, item)
+#         if os.path.isdir(full_path):
+#             all_files.extend(walk_files(full_path))
+#         else:
+#             all_files.append(full_path)
+#
+#     return all_files
+#
+#
+# def excl(file_to_check):
+#     # if any(item_file in file_to_check.name for item_file in excludes):
+#     #     return None
+#     # else:
+#     return file_to_check
 
-    return all_files
+def tar_command(arch_dir: str, excludes: list):
+    tar_arr = ["/usr/bin/tar", "-zcv", "-I", "pigz", arch_dir]
+    if len(excludes) > 0:
+        for item_exclude in excludes:
+            tar_arr.extend([f"--exclude={item_exclude}"])
 
-
-def excl(file_to_check):
-    # if any(item_file in file_to_check.name for item_file in excludes):
-    #     return None
-    # else:
-    return file_to_check
+    return tar_arr
 
 
 ########################################
@@ -137,12 +145,7 @@ if HOSTNAME is None or HOSTNAME == '':
     sys.exit(1)
 
 for item_arch in CONFIG_DATA['backup']:
-    files_arr = walk_files(item_arch['path'])
-    with tarfile.open(f"{item_arch['name']}.tar.gz", 'w:gz') as archive:
-        for file in files_arr:
-            print(file)
-            archive.add(file, exclude=excl)
-        archive.list()
+    print(tar_command(item_arch['path'], item_arch['excludes']))
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
