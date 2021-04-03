@@ -31,5 +31,5 @@ all_f = walk_files(dir_q)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for i in all_f:
-        archive.add(i, filter=ads(i))
+        archive.add(i, filter=ads)
     archive.list()
