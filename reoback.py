@@ -91,6 +91,18 @@ def check_dirs_exist(dirs: list) -> dict:
     return out_data
 
 
+def walk_files(directory: str) -> list:
+    all_files = []
+    for item in os.listdir(directory):
+        full_path = os.path.join(directory, item)
+        if os.path.isdir(full_path):
+            all_files.extend(walk_files(full_path))
+        else:
+            all_files.append(full_path)
+
+    return all_files
+
+
 ########################################
 
 config_open = open(CONFIG_FILE, encoding='utf-8')
@@ -105,7 +117,6 @@ if not process_pid_file(PID_FILE):
 DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA['pid_file_path']]
 for item_dir in CONFIG_DATA['backup']:
     DIRS_EXISTS.append(item_dir['path'])
-    DIRS_EXISTS.extend(item_dir['excludes'])
 
 print(check_dirs_exist(DIRS_EXISTS))
 
