@@ -109,8 +109,8 @@ def check_dirs_exist(dirs: list) -> dict:
 #     # else:
 #     return file_to_check
 
-def tar_command(arch_dir: str, excludes: list):
-    tar_arr = ["/usr/bin/tar", "-zcv", "-I", "pigz", arch_dir]
+def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
+    tar_arr = ["/usr/bin/tar", "-zcv", out_file, "-I", "pigz", arch_dir]
     if len(excludes) > 0:
         for item_exclude in excludes:
             tar_arr.extend([f"--exclude={item_exclude}"])
@@ -143,8 +143,10 @@ if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
     sys.exit(1)
 
+OUT_FILE = f"{add_slash(CONFIG_DATA['tmp_dir'])}{CONFIG_DATA['name']}.tar.gz"
+
 for item_arch in CONFIG_DATA['backup']:
-    print(tar_command(item_arch['path'], item_arch['excludes']))
+    print(tar_command(item_arch['path'], item_arch['excludes'], OUT_FILE))
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
