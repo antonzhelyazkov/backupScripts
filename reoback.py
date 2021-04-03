@@ -120,7 +120,9 @@ for item_dir in CONFIG_DATA['backup']:
 
 if not check_dirs_exist(DIRS_EXISTS)['status']:
     print_log(VERBOSE, f"ERROR dirs not found {check_dirs_exist(DIRS_EXISTS)['err']}")
+    sys.exit(1)
 
+print(DIRS_EXISTS)
 
 if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
