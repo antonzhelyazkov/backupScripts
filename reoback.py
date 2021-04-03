@@ -143,9 +143,8 @@ if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
     sys.exit(1)
 
-OUT_FILE = f"{add_slash(CONFIG_DATA['tmp_dir'])}{CONFIG_DATA['name']}.tar.gz"
-
 for item_arch in CONFIG_DATA['backup']:
+    OUT_FILE = f"{add_slash(CONFIG_DATA['tmp_dir'])}{item_arch['name']}.tar.gz"
     print(tar_command(item_arch['path'], item_arch['excludes'], OUT_FILE))
 
 if process_nagios_file(NAGIOS_FILE):
