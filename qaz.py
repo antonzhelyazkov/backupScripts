@@ -18,7 +18,7 @@ def walk_files(directory: str) -> list:
     return all_files
 
 
-def exclude_function(asd):
+def excludesq(asd):
     if any(qwer in asd.name for qwer in excludes):
         return None
     else:
@@ -29,5 +29,5 @@ all_f = walk_files(dir_q)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for iqq in all_f:
-        archive.add(iqq, filter=exclude_function(iqq))
+        archive.add(iqq, filter=excludesq(iqq))
     archive.list()
