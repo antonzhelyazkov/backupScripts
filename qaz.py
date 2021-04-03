@@ -1,6 +1,5 @@
 import os
 import tarfile
-from pathlib import Path
 
 dir_q: str = "/usr/local/neterratv-scripts/"
 excludes = ["v2wm", "wm-py", "delete"]
