@@ -28,5 +28,5 @@ all_f = walk_files(dir_q)
 
 with tarfile.open('new_archive.tar.gz', 'w:gz') as archive:
     for file in all_f:
-        archive.add(file, filter=excl)
+        archive.add(file)
     archive.list()
