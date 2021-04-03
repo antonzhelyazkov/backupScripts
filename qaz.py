@@ -6,11 +6,6 @@ dir_q: str = "/usr/local/neterratv-scripts/"
 excludes = ["v2wm", "wm-py", "delete"]
 
 
-# with tarfile.open('new_archive.tar.gz', 'w') as archive:
-#     for i in os.listdir(dir):
-#         archive.add(i, filter=lambda x: x if x.name.endswith('.txt') else None)
-#     archive.list()
-
 def walk_files(directory: str) -> list:
     all_files = []
     for item in os.listdir(directory):
@@ -33,6 +28,6 @@ def ads(asd):
 all_f = walk_files(dir_q)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
-    for i in all_f:
-        archive.add(i, filter=ads)
+    for iqq in all_f:
+        archive.add(iqq, filter=ads(iqq))
     archive.list()
