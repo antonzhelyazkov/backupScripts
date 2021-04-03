@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import socket
+import subprocess
 import sys
 import time
 
@@ -145,7 +146,9 @@ if HOSTNAME is None or HOSTNAME == '':
 
 for item_arch in CONFIG_DATA['backup']:
     OUT_FILE = f"{add_slash(CONFIG_DATA['tmp_dir'])}{item_arch['name']}.tar.gz"
-    print(tar_command(item_arch['path'], item_arch['excludes'], OUT_FILE))
+    tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], OUT_FILE)
+    out = subprocess.run(tar_cmd, shell=True)
+    print(f"qweqwe {out}")
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
