@@ -4,7 +4,6 @@ import logging
 import os
 import socket
 import sys
-import tarfile
 import time
 
 VERBOSE = False
