@@ -115,14 +115,16 @@ if not process_pid_file(PID_FILE):
     sys.exit(1)
 
 DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA['pid_file_path']]
+DIRS_TO_ARCHIVE =[]
 for item_dir in CONFIG_DATA['backup']:
     DIRS_EXISTS.append(item_dir['path'])
+    DIRS_TO_ARCHIVE.append(item_dir['path'])
 
 if not check_dirs_exist(DIRS_EXISTS)['status']:
     print_log(VERBOSE, f"ERROR dirs not found {check_dirs_exist(DIRS_EXISTS)['err']}")
     sys.exit(1)
 
-print(DIRS_EXISTS)
+print(DIRS_TO_ARCHIVE)
 
 if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
