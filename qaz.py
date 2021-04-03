@@ -2,8 +2,8 @@ import os
 import tarfile
 from pathlib import Path
 
-dir_q: str = "/opt/neterra-cdn-nodejs/modules/cdn-video-appender"
-excludes = ["v2wm", "wm-py", "cdn-video-appender/node_modules"]
+dir_q: str = "/usr/local/neterratv-scripts/"
+excludes = ["v2wm", "wm-py", "delete"]
 
 
 def walk_files(directory: str) -> list:
@@ -18,7 +18,7 @@ def walk_files(directory: str) -> list:
     return all_files
 
 
-def excludesq(asd):
+def ads(asd):
     if any(qwer in asd.name for qwer in excludes):
         return None
     else:
@@ -29,5 +29,5 @@ all_f = walk_files(dir_q)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for iqq in all_f:
-        archive.add(iqq, filter=excludesq(iqq))
+        archive.add(iqq, exclude=ads(iqq))
     archive.list()
