@@ -104,11 +104,11 @@ def walk_files(directory: str) -> list:
     return all_files
 
 
-def excl(file_to_check, excludes):
-    if any(item_file in file_to_check.name for item_file in excludes):
-        return None
-    else:
-        return file_to_check
+def excl(file_to_check):
+    # if any(item_file in file_to_check.name for item_file in excludes):
+    #     return None
+    # else:
+    return file_to_check
 
 
 ########################################
@@ -140,7 +140,7 @@ for item_arch in CONFIG_DATA['backup']:
     files_arr = walk_files(item_arch['path'])
     with tarfile.open(f"{item_arch['name']}.tar.gz", 'w:gz') as archive:
         for file in files_arr:
-            archive.add(file, filter=excl(file, item_arch['excludes']))
+            archive.add(file, filter=excl(file))
         archive.list()
 
 if process_nagios_file(NAGIOS_FILE):
