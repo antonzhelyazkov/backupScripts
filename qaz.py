@@ -1,7 +1,7 @@
 import os
 import tarfile
 
-dir_q: str = "/usr/local/neterratv-scripts/"
+dir_q: str = "/opt/neterra-cdn-nodejs/modules/cdn-video-appender/"
 excludes = ["v2wm", "wm-py", "delete"]
 
 
