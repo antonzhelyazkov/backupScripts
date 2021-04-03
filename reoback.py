@@ -124,7 +124,9 @@ if not check_dirs_exist(DIRS_EXISTS)['status']:
     print_log(VERBOSE, f"ERROR dirs not found {check_dirs_exist(DIRS_EXISTS)['err']}")
     sys.exit(1)
 
-print(DIRS_TO_ARCHIVE)
+for item_arch in DIRS_TO_ARCHIVE:
+    files_arr = walk_files(item_arch)
+    print(files_arr)
 
 if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
