@@ -17,16 +17,16 @@ def walk_files(directory: str) -> list:
     return all_files
 
 
-def ads(asd):
-    if any(qwer in asd.name for qwer in excludes):
+def excl(file_to_check):
+    if any(item_file in file_to_check.name for item_file in excludes):
         return None
     else:
-        return asd
+        return file_to_check
 
 
 all_f = walk_files(dir_q)
 
 with tarfile.open('new_archive.tar.gz', 'w') as archive:
     for file in all_f:
-        archive.add(file, filter=ads)
+        archive.add(file, filter=excl)
     archive.list()
