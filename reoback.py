@@ -103,6 +103,13 @@ def walk_files(directory: str) -> list:
     return all_files
 
 
+def excl(file_to_check, excludes):
+    if any(item_file in file_to_check.name for item_file in excludes):
+        return None
+    else:
+        return file_to_check
+
+
 ########################################
 
 config_open = open(CONFIG_FILE, encoding='utf-8')
@@ -115,7 +122,7 @@ if not process_pid_file(PID_FILE):
     sys.exit(1)
 
 DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA['pid_file_path']]
-DIRS_TO_ARCHIVE =[]
+DIRS_TO_ARCHIVE = []
 for item_dir in CONFIG_DATA['backup']:
     DIRS_EXISTS.append(item_dir['path'])
     DIRS_TO_ARCHIVE.append(item_dir['path'])
@@ -124,14 +131,13 @@ if not check_dirs_exist(DIRS_EXISTS)['status']:
     print_log(VERBOSE, f"ERROR dirs not found {check_dirs_exist(DIRS_EXISTS)['err']}")
     sys.exit(1)
 
-for item_arch in DIRS_TO_ARCHIVE:
-    files_arr = walk_files(item_arch)
-    print(files_arr)
-
 if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
     sys.exit(1)
 
+for item_arch in CONFIG_DATA['backup']:
+    files_arr = walk_files(item_arch['path'])
+    print(files_arr)
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
