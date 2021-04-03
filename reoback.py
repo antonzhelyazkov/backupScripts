@@ -137,13 +137,11 @@ if HOSTNAME is None or HOSTNAME == '':
     sys.exit(1)
 
 for item_arch in CONFIG_DATA['backup']:
-    print(item_arch['path'])
     files_arr = walk_files(item_arch['path'])
-    print("qqwe")
     with tarfile.open(f"{item_arch['name']}.tar.gz", 'w:gz') as archive:
         for file in files_arr:
             print(file)
-            archive.add(file)
+            archive.add(file, exclude=excl())
         archive.list()
 
 if process_nagios_file(NAGIOS_FILE):
