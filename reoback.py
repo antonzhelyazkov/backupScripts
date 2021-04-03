@@ -118,7 +118,8 @@ DIRS_EXISTS = [CONFIG_DATA['tmp_dir'], CONFIG_DATA['log_dir'], CONFIG_DATA['pid_
 for item_dir in CONFIG_DATA['backup']:
     DIRS_EXISTS.append(item_dir['path'])
 
-print(check_dirs_exist(DIRS_EXISTS))
+if not check_dirs_exist(DIRS_EXISTS)['status']:
+    print_log(VERBOSE, f"ERROR dirs not found {check_dirs_exist(DIRS_EXISTS)['err']}")
 
 
 if HOSTNAME is None or HOSTNAME == '':
