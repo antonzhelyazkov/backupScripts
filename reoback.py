@@ -135,16 +135,16 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         print(f"ERROR {ftp_host} {t}")
         return False
 
-    ftp_hostdir = ftp_session.mkd(f"{hostname}/")
+    ftp_hostdir = ftp_session.mlsd(/)
     print(ftp_hostdir)
 
-    ftpResponse = ftp_session.mkd(f"{hostname}/{backup_stamp}")
-    print(ftpResponse)
-
-    file_fh = open(file, "rb")
-    ftp_session.storbinary(f"STOR {f_name}", file_fh)
-    file_fh.close()
-    ftp_session.close()
+    # ftpResponse = ftp_session.mkd(f"{hostname}/{backup_stamp}")
+    # print(ftpResponse)
+    #
+    # file_fh = open(file, "rb")
+    # ftp_session.storbinary(f"STOR {f_name}", file_fh)
+    # file_fh.close()
+    # ftp_session.close()
 
 
 ########################################
