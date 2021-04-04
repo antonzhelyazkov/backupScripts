@@ -125,6 +125,7 @@ def create_dir(directory: str) -> bool:
 
 def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_user: str, ftp_pass: str) -> bool:
     f_name = os.path.basename(file)
+    dir_stamp = f"{hostname}/{backup_stamp}"
     try:
         ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
         print(ftp_session)
@@ -146,18 +147,14 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
             print_log(VERBOSE, f"ERROR create dir {hostname} {e}")
             return False
 
-    ftp_current_backup = ftp_session.mlsd(f"{hostname}/")
-    for name, facts in ftp_current_backup:
-        print(name)
-    print(backup_stamp)
-    if any(name == backup_stamp for name, facts in ftp_current_backup):
-        print_log(VERBOSE, f"INFO directory found {hostname}/{backup_stamp}")
-    else:
-        print_log(VERBOSE, f"INFO NOT found {hostname}/{backup_stamp}")
+    try:
+        ftp_session.mlsd(dir_stamp)
+    except ftplib.Error as e:
+        print_log(VERBOSE, f"INFO Directory not found {dir_stamp} {e}")
         try:
-            ftp_session.mkd(f"{hostname}/{backup_stamp}")
-        except ftplib.Error as e:
-            print_log(VERBOSE, f"ERROR create dir {hostname}/{backup_stamp} {e}")
+            ftp_session.mkd(dir_stamp)
+        except ftplib.Error as create_dir:
+            print_log(VERBOSE, f"ERROR could not create dir {create_dir}")
             return False
 
     # ftpResponse = ftp_session.mkd(f"{hostname}/{backup_stamp}")
