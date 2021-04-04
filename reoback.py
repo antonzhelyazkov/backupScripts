@@ -131,6 +131,8 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         print(ftp_session)
     except ftplib.Error as e:
         print(f"ERROR {e}")
+    except socket.timeout as t:
+        print(f"ERROR {t}")
 
 
 ########################################
