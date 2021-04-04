@@ -123,16 +123,19 @@ def create_dir(directory: str) -> bool:
         return False
 
 
-def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_user: str, ftp_pass: str):
-    print(hostname, str(backup_stamp), file)
+def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_user: str, ftp_pass: str) -> bool:
 
     try:
         ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
         print(ftp_session)
     except ftplib.Error as e:
         print(f"ERROR {e}")
+        return False
     except socket.timeout as t:
         print(f"ERROR {t}")
+        return False
+
+    ftp_session.storbinary("qwe", file)
 
 
 ########################################
