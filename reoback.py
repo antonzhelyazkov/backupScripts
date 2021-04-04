@@ -141,11 +141,10 @@ if HOSTNAME is None or HOSTNAME == '':
 for item_arch in CONFIG_DATA['backup']:
     OUT_FILE = f"{add_slash(CONFIG_DATA['tmp_dir'])}{item_arch['name']}.tar.gz"
     tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], OUT_FILE)
-    run_tar = subprocess.run(tar_cmd, stdout=subprocess.PIPE)
+    run_tar = subprocess.run(tar_cmd, stdout=subprocess.PIPE, capture_output=True)
     if run_tar.returncode != 0:
         print_log(VERBOSE, f"ERROR in {item_arch['path']}")
-        print(run_tar.stderr)
-        print(f"qweqwe {run_tar.stdout}")
+        print(f"qweqwe {run_tar}")
         sys.exit(1)
     else:
         print_log(VERBOSE, f"INFO archive successful {OUT_FILE}")
