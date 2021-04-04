@@ -140,7 +140,6 @@ def create_ftp_dir(directory: str, session) -> bool:
 def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
     try:
         session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
-        print(session)
         return session
     except ftplib.Error as e:
         print_log(VERBOSE, f"ERROR {ftp_host} {e}")
