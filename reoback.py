@@ -171,7 +171,27 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, session) -> bool:
         session.close()
 
 
+def ftp_dir_remove(ftp_sess, path: str) -> bool:
+    for (name, facts) in ftp_sess.mlsd(path=path):
+        if name in ['.', '..']:
+            continue
+        elif facts['type'] == 'file':
+            ftp_sess.delete(f"{path}/{name}")
+        elif facts['type'] == 'dir':
+            ftp_dir_remove(ftp_sess, f"{path}/{name}")
+
+    try:
+        ftp_sess.rmd(path)
+        return True
+    except ftplib.Error as e:
+        print_log(VERBOSE, f"ERROR remove {path}")
+        return False
+
+
 def ftp_backup_rotate(session, hostname: str, days_rotate: int):
+    print(session)
+    print(hostname)
+    print(days_rotate * 86400)
     pass
 
 
@@ -221,6 +241,12 @@ for item_arch in CONFIG_DATA['backup']:
                    ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
                                CONFIG_DATA['ftp_login']['ftp_user'],
                                CONFIG_DATA['ftp_login']['ftp_pass']))
+
+ftp_backup_rotate(ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
+                              CONFIG_DATA['ftp_login']['ftp_user'],
+                              CONFIG_DATA['ftp_login']['ftp_pass']),
+                  HOSTNAME,
+                  CONFIG_DATA['backup_rotate'])
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)

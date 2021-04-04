@@ -23,12 +23,12 @@ CONFIG_DATA = json.load(config_open)
 
 
 def remove_ftp_dir(ftp_sess, path):
-    for (name, properties) in ftp_sess.mlsd(path=path):
+    for (name, facts) in ftp_sess.mlsd(path=path):
         if name in ['.', '..']:
             continue
-        elif properties['type'] == 'file':
+        elif facts['type'] == 'file':
             ftp_sess.delete(f"{path}/{name}")
-        elif properties['type'] == 'dir':
+        elif facts['type'] == 'dir':
             remove_ftp_dir(ftp_sess, f"{path}/{name}")
     ftp_sess.rmd(path)
 
