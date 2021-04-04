@@ -140,7 +140,7 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         print(f"ERROR {ftp_host} {t}")
         return False
 
-
+    create_ftp_dir(dir_stamp, ftp_session)
 
     # ftp_dir = ftp_session.mlsd("/")
     # if any(name == hostname for name, facts in ftp_dir):
