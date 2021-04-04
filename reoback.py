@@ -10,7 +10,7 @@ import time
 VERBOSE = False
 CONFIG_FILE = "./config.json"
 LOG_DIR_DEFAULT = "."
-HOSTNAME = socket.gethostname().split(".")[0]
+HOSTNAME = socket.gethostname()
 argv = sys.argv[1:]
 
 try:
