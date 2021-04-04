@@ -194,6 +194,7 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
     print(session)
     print(hostname)
     seconds_minus = days_rotate * 86400
+    seconds_minus = 20
     stamp_before = backup_stamp - seconds_minus
 
     print(f"{stamp_before}")
@@ -205,7 +206,10 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
         elif facts['type'] == 'dir' and re.match("^\d{10}$", name):
             dirs_arr.append(name)
 
-    print(dirs_arr)
+    for item in dirs_arr:
+        if item < stamp_before:
+            dir_to_remove = f"{hostname}/{item}"
+            print(dir_to_remove)
 
 
 ########################################
