@@ -208,6 +208,13 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
     return True
 
 
+def remove_local_dir(directory):
+    files_arr = os.listdir(directory)
+    for item in files_arr:
+        file_to_remove = f"{directory}/{item}"
+        print(file_to_remove)
+
+
 def remove_local_backups(days_rotate: int, backup_dir: str, backup_stamp: int):
     seconds_minus = days_rotate * 86400
     seconds_minus = 600
@@ -221,8 +228,8 @@ def remove_local_backups(days_rotate: int, backup_dir: str, backup_stamp: int):
 
     for item in dirs_to_process:
         if int(item) < stamp_before:
-            dir_to_remove = f"{backup_dir}/{item}"
-            print(dir_to_remove)
+            dir_to_remove = f"{backup_dir}{item}"
+            remove_local_dir(dir_to_remove)
 
 
 ########################################
