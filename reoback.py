@@ -171,29 +171,37 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, session) -> bool:
         session.close()
 
 
-def ftp_dir_remove(ftp_sess, path: str) -> bool:
-    for (name, facts) in ftp_sess.mlsd(path=path):
+def ftp_dir_remove(session, path: str) -> bool:
+    for (name, facts) in session.mlsd(path=path):
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'file':
-            ftp_sess.delete(f"{path}/{name}")
+            session.delete(f"{path}/{name}")
         elif facts['type'] == 'dir':
-            ftp_dir_remove(ftp_sess, f"{path}/{name}")
+            ftp_dir_remove(session, f"{path}/{name}")
 
     try:
-        ftp_sess.rmd(path)
+        session.rmd(path)
         return True
     except ftplib.Error as e:
         print_log(VERBOSE, f"ERROR remove {path}")
         return False
 
 
-def ftp_backup_rotate(session, hostname: str, days_rotate: int):
+def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: int):
     print(session)
     print(hostname)
-    print(days_rotate * 86400)
-    pass
+    seconds_minus = days_rotate * 86400
+    print(seconds_minus)
 
+    dirs_arr = []
+    for (name, facts) in session.mlsd(path=hostname)
+        if name in ['.', '..']:
+            continue
+        elif facts['type'] == 'dir':
+            dirs_arr.append(name)
+
+    print(dirs_arr)
 
 ########################################
 
