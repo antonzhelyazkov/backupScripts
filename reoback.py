@@ -137,7 +137,7 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
 
     ftp_hostdir = ftp_session.mlsd("/")
     for item in ftp_hostdir:
-        print(item)
+        print(item[0])
 
 
     # ftpResponse = ftp_session.mkd(f"{hostname}/{backup_stamp}")
