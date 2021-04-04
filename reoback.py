@@ -190,7 +190,7 @@ def ftp_dir_remove(session, path: str) -> bool:
         return False
 
 
-def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: int):
+def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: int) -> bool:
     print(session)
     print(hostname)
     seconds_minus = days_rotate * 86400
@@ -210,6 +210,10 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
         if int(item) < stamp_before:
             dir_to_remove = f"{hostname}/{item}"
             print(dir_to_remove)
+            if not ftp_dir_remove(session, dir_to_remove):
+                return False
+
+    return True
 
 
 ########################################
@@ -259,12 +263,13 @@ for item_arch in CONFIG_DATA['backup']:
                                CONFIG_DATA['ftp_login']['ftp_user'],
                                CONFIG_DATA['ftp_login']['ftp_pass']))
 
-ftp_backup_rotate(ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
-                              CONFIG_DATA['ftp_login']['ftp_user'],
-                              CONFIG_DATA['ftp_login']['ftp_pass']),
-                  HOSTNAME,
-                  CONFIG_DATA['backup_rotate'],
-                  BACKUP_STAMP)
+if ftp_backup_rotate(ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
+                                 CONFIG_DATA['ftp_login']['ftp_user'],
+                                 CONFIG_DATA['ftp_login']['ftp_pass']),
+                     HOSTNAME,
+                     CONFIG_DATA['backup_rotate'],
+                     BACKUP_STAMP):
+    print_log(VERBOSE, f"INFO all backups older than {CONFIG_DATA['backup_rotate']} are removed")
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
