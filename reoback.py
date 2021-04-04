@@ -229,7 +229,6 @@ def remove_local_dir(directory: str) -> bool:
 
 def remove_local_backups(days_rotate: int, backup_dir: str, backup_stamp: int) -> bool:
     seconds_minus = days_rotate * 86400
-    seconds_minus = 600
     stamp_before = backup_stamp - seconds_minus
 
     dirs_arr = os.listdir(backup_dir)
