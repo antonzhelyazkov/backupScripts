@@ -136,12 +136,11 @@ def create_ftp_dir(directory: str, session) -> bool:
         return False
 
 
-def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_user: str, ftp_pass: str) -> bool:
-    f_name = os.path.basename(file)
-    dir_stamp = f"{hostname}/{backup_stamp}"
+def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
     try:
-        ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
-        print(ftp_session)
+        session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
+        print(session)
+        return session
     except ftplib.Error as e:
         print(f"ERROR {ftp_host} {e}")
         return False
@@ -149,16 +148,27 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         print(f"ERROR {ftp_host} {t}")
         return False
 
-    if not create_ftp_dir(hostname, ftp_session):
+
+def ftp_upload(file: str, hostname: str, backup_stamp: int, session) -> bool:
+    f_name = os.path.basename(file)
+    dir_stamp = f"{hostname}/{backup_stamp}"
+
+    if not create_ftp_dir(hostname, session):
         sys.exit(1)
 
-    if not create_ftp_dir(dir_stamp, ftp_session):
+    if not create_ftp_dir(dir_stamp, session):
         sys.exit(1)
 
     file_fh = open(file, "rb")
-    ftp_session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh)
-    file_fh.close()
-    ftp_session.close()
+    try:
+        session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh)
+        return True
+    except ftplib.Error as e:
+        print_log(VERBOSE, f"ERROR {e}")
+        return False
+    finally:
+        file_fh.close()
+        session.close()
 
 
 ########################################
@@ -204,9 +214,9 @@ for item_arch in CONFIG_DATA['backup']:
         ftp_upload(OUT_FILE,
                    HOSTNAME,
                    BACKUP_STAMP,
-                   CONFIG_DATA['ftp_login']['ftp_host'],
-                   CONFIG_DATA['ftp_login']['ftp_user'],
-                   CONFIG_DATA['ftp_login']['ftp_pass'])
+                   ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
+                               CONFIG_DATA['ftp_login']['ftp_user'],
+                               CONFIG_DATA['ftp_login']['ftp_pass']))
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
