@@ -130,6 +130,7 @@ def create_ftp_dir(directory: str, session) -> bool:
         return True
     except ftplib.error_perm as perm:
         print_log(VERBOSE, f"INFO directory exists {directory}")
+        print_log(VERBOSE, f"INFO {perm}")
         return True
     except ftplib.Error as e:
         print_log(VERBOSE, f"ERROR {e}")
@@ -184,7 +185,7 @@ def ftp_dir_remove(session, path: str) -> bool:
         session.rmd(path)
         return True
     except ftplib.Error as e:
-        print_log(VERBOSE, f"ERROR remove {path}")
+        print_log(VERBOSE, f"ERROR remove {path} {e}")
         return False
 
 
@@ -192,7 +193,9 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
     print(session)
     print(hostname)
     seconds_minus = days_rotate * 86400
-    print(seconds_minus)
+    stamp_before = backup_stamp - seconds_minus
+
+    print(f"{stamp_before}")
 
     dirs_arr = []
     for (name, facts) in session.mlsd(path=hostname):
