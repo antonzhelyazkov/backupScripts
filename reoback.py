@@ -102,26 +102,8 @@ def check_dirs_exist(dirs: list) -> dict:
     return out_data
 
 
-# def walk_files(directory: str) -> list:
-#     all_files = []
-#     for item in os.listdir(directory):
-#         full_path = os.path.join(directory, item)
-#         if os.path.isdir(full_path):
-#             all_files.extend(walk_files(full_path))
-#         else:
-#             all_files.append(full_path)
-#
-#     return all_files
-#
-#
-# def excl(file_to_check):
-#     # if any(item_file in file_to_check.name for item_file in excludes):
-#     #     return None
-#     # else:
-#     return file_to_check
-
 def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
-    tar_arr = ["/usr/bin/tar", "-zcf", out_file]
+    tar_arr = ["/usr/bin/tar", "-cf", "-I", "pigz", out_file]
     if len(excludes) > 0:
         for item_exclude in excludes:
             tar_arr.extend([f"--exclude={remove_slash(item_exclude)}"])
