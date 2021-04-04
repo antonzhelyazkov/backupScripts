@@ -23,7 +23,7 @@ except getopt.GetoptError as err:
 
 for opt, arg in opts:
     if opt in ['-c', '--config']:
-        config_file = arg
+        CONFIG_FILE = arg
     if opt in ['-v', '--verbose']:
         VERBOSE = True
 
