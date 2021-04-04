@@ -219,7 +219,7 @@ def remove_local_dir(directory: str) -> bool:
         print_log(VERBOSE, f"INFO directory {directory} removed")
         return True
     except OSError as e:
-        print_log(VERBOSE, f"ERROR remove {directory}")
+        print_log(VERBOSE, f"ERROR remove {directory} {e}")
         return False
 
 
@@ -301,9 +301,10 @@ else:
     print_log(VERBOSE, f"ERROR in remove FTP older backups")
     sys.exit(1)
 
-remove_local_backups(CONFIG_DATA['local_backup_rotate'],
-                     add_slash(CONFIG_DATA['tmp_dir']),
-                     BACKUP_STAMP)
+if not remove_local_backups(CONFIG_DATA['local_backup_rotate'],
+                            add_slash(CONFIG_DATA['tmp_dir']),
+                            BACKUP_STAMP):
+    sys.exit(1)
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
