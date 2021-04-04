@@ -207,7 +207,7 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
             dirs_arr.append(name)
 
     for item in dirs_arr:
-        if item < stamp_before:
+        if int(item) < stamp_before:
             dir_to_remove = f"{hostname}/{item}"
             print(dir_to_remove)
 
