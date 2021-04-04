@@ -135,9 +135,12 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         print(f"ERROR {ftp_host} {t}")
         return False
 
-    ftp_hostdir = ftp_session.mlsd("/")
-    for item1, item2 in ftp_hostdir:
-        print(item1, item2)
+    ftp_dir = ftp_session.mlsd("/")
+    if any(name == hostname for name, facts in ftp_dir):
+        print(f"INFO found {hostname}")
+    else:
+        print(f"INFO NOT found {hostname}")
+
 
 
     # ftpResponse = ftp_session.mkd(f"{hostname}/{backup_stamp}")
