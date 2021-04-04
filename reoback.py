@@ -135,7 +135,10 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         print(f"ERROR {t}")
         return False
 
-    ftp_session.storbinary("qwe", file)
+    file_fh = open(file, "rb")
+    ftp_session.storbinary("STOR qwe", file_fh)
+    file_fh.close()
+    ftp_session.close()
 
 
 ########################################
