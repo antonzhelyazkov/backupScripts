@@ -113,6 +113,15 @@ def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
     return tar_arr
 
 
+def create_dir(directory: str) -> bool:
+    try:
+        os.makedirs(directory, exist_ok=True)
+        return True
+    except OSError as e:
+        print_log(VERBOSE, f"ERROR {e}")
+        return False
+
+
 ########################################
 
 config_open = open(CONFIG_FILE, encoding='utf-8')
@@ -138,10 +147,13 @@ if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
     sys.exit(1)
 
-print(int(time.time()))
+BACKUP_STAMP = int(time.time())
+BACKUP_DIR = f"{add_slash(CONFIG_DATA['tmp_dir'])}{str(BACKUP_STAMP)}/"
 
 for item_arch in CONFIG_DATA['backup']:
-    OUT_FILE = f"{add_slash(CONFIG_DATA['tmp_dir'])}{item_arch['name']}.tar.gz"
+    OUT_FILE = f"{BACKUP_DIR}{item_arch['name']}.tar.gz"
+    if not create_dir(BACKUP_DIR):
+        sys.exit(1)
     tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], OUT_FILE)
     run_tar = subprocess.run(tar_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if run_tar.returncode != 0:
