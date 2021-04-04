@@ -147,7 +147,7 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
             return False
 
     ftp_current_backup = ftp_session.mlsd(f"{hostname}/")
-    for name in ftp_current_backup:
+    for name, facts in ftp_current_backup:
         print(name)
     if any(name == backup_stamp for name, facts in ftp_current_backup):
         print_log(VERBOSE, f"INFO directory found {hostname}/{backup_stamp}")
