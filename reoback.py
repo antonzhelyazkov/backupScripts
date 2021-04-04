@@ -137,11 +137,25 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
 
     ftp_dir = ftp_session.mlsd("/")
     if any(name == hostname for name, facts in ftp_dir):
-        print(f"INFO found {hostname}")
+        print_log(VERBOSE, f"INFO found {hostname}")
     else:
-        print(f"INFO NOT found {hostname}")
+        print_log(VERBOSE, f"INFO NOT found {hostname}")
+        try:
+            ftp_session.mkd(hostname)
+        except ftplib.Error as e:
+            print_log(VERBOSE, f"ERROR create dir {hostname} {e}")
+            return False
 
-
+    ftp_current_backup = ftp_session.mlsd(f"{hostname}/")
+    if any(name == backup_stamp for name, facts in ftp_current_backup):
+        print_log(VERBOSE, f"INFO directory found {hostname}/{backup_stamp}")
+    else:
+        print_log(VERBOSE, f"INFO NOT found {hostname}/{backup_stamp}")
+        try:
+            ftp_session.mkd(f"{hostname}/{backup_stamp}")
+        except ftplib.Error as e:
+            print_log(VERBOSE, f"ERROR create dir {hostname}/{backup_stamp} {e}")
+            return False
 
     # ftpResponse = ftp_session.mkd(f"{hostname}/{backup_stamp}")
     # print(ftpResponse)
