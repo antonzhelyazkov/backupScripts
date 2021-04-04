@@ -143,6 +143,8 @@ for item_arch in CONFIG_DATA['backup']:
     tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], OUT_FILE)
     out = subprocess.run(tar_cmd, stdout=subprocess.PIPE)
     print(out.returncode)
+    print(out.stdout)
+    print(out.stderr)
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
