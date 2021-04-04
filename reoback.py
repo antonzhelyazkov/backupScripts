@@ -208,16 +208,20 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
     return True
 
 
-def remove_local_backups(backup_rotate: int, backup_dir: str):
+def remove_local_backups(days_rotate: int, backup_dir: str, backup_stamp: int):
+    seconds_minus = days_rotate * 86400
+    stamp_before = backup_stamp - seconds_minus
+
     dirs_arr = os.listdir(backup_dir)
-    print(dirs_arr)
     dirs_to_process = []
     for item in dirs_arr:
         if re.match("^\d{10}$", item):
             dirs_to_process.append(item)
 
     for item in dirs_to_process:
-        print(item)
+        if int(item) < stamp_before:
+            dir_to_remove = f"{backup_dir}/{item}"
+            print(dir_to_remove)
 
 
 ########################################
@@ -278,7 +282,9 @@ else:
     print_log(VERBOSE, f"ERROR in remove FTP older backups")
     sys.exit(1)
 
-if remove_local_backups(CONFIG_DATA['local_backup_rotate'], add_slash(CONFIG_DATA['tmp_dir'])):
+if remove_local_backups(CONFIG_DATA['local_backup_rotate'],
+                        add_slash(CONFIG_DATA['tmp_dir']),
+                        BACKUP_STAMP):
     pass
 
 if process_nagios_file(NAGIOS_FILE):
