@@ -1,3 +1,4 @@
+import ftplib
 import getopt
 import json
 import logging
@@ -122,8 +123,14 @@ def create_dir(directory: str) -> bool:
         return False
 
 
-def ftp_upload(file: str, hostname: str, backup_stamp: str):
-    print(hostname, backup_stamp, file)
+def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_user: str, ftp_pass: str):
+    print(hostname, str(backup_stamp), file)
+
+    try:
+        ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass)
+        print(ftp_session)
+    except ftplib.Error as e:
+        print(f"ERROR {e}")
 
 
 ########################################
@@ -166,7 +173,12 @@ for item_arch in CONFIG_DATA['backup']:
         sys.exit(1)
     else:
         print_log(VERBOSE, f"INFO archive successful {OUT_FILE}")
-        ftp_upload(OUT_FILE, HOSTNAME, BACKUP_STAMP)
+        ftp_upload(OUT_FILE,
+                   HOSTNAME,
+                   BACKUP_STAMP,
+                   CONFIG_DATA['ftp_login']['ftp_host'],
+                   CONFIG_DATA['ftp_login']['ftp_user'],
+                   CONFIG_DATA['ftp_login']['ftp_pass'])
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
