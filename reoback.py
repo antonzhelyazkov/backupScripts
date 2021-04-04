@@ -111,10 +111,12 @@ def check_dirs_exist(dirs: list) -> dict:
 #     return file_to_check
 
 def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
-    tar_arr = ["/usr/bin/tar", "-zcvf", out_file, arch_dir]
+    tar_arr = ["/usr/bin/tar", "-zcvf", out_file]
     if len(excludes) > 0:
         for item_exclude in excludes:
             tar_arr.extend([f"--exclude={item_exclude}"])
+
+    tar_arr.append(arch_dir)
 
     return tar_arr
 
