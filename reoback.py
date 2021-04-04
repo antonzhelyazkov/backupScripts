@@ -195,13 +195,14 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
     print(seconds_minus)
 
     dirs_arr = []
-    for (name, facts) in session.mlsd(path=hostname)
+    for (name, facts) in session.mlsd(path=hostname):
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'dir':
             dirs_arr.append(name)
 
     print(dirs_arr)
+
 
 ########################################
 
@@ -254,7 +255,8 @@ ftp_backup_rotate(ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
                               CONFIG_DATA['ftp_login']['ftp_user'],
                               CONFIG_DATA['ftp_login']['ftp_pass']),
                   HOSTNAME,
-                  CONFIG_DATA['backup_rotate'])
+                  CONFIG_DATA['backup_rotate'],
+                  BACKUP_STAMP)
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
