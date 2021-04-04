@@ -50,6 +50,15 @@ def add_slash(directory):
     return dir_return
 
 
+def remove_slash(directory):
+    if directory.endswith("/"):
+        size = len(directory)
+        dir_return = directory[:size - 1]
+        return dir_return
+    else:
+        return directory
+
+
 def process_nagios_file(nagios_f: str) -> bool:
     time_now = int(time.time())
 
@@ -114,7 +123,7 @@ def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
     tar_arr = ["/usr/bin/tar", "-zcvf", out_file]
     if len(excludes) > 0:
         for item_exclude in excludes:
-            tar_arr.extend([f"--exclude={item_exclude}"])
+            tar_arr.extend([f"--exclude={remove_slash(item_exclude)}"])
 
     tar_arr.append(arch_dir)
 
