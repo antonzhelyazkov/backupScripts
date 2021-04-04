@@ -56,7 +56,6 @@ def remove_slash(directory):
     if directory.endswith("/"):
         size = len(directory)
         dir_return = directory[:size - 1]
-        print(dir_return)
         return dir_return
     else:
         return directory
@@ -144,10 +143,10 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
         print(session)
         return session
     except ftplib.Error as e:
-        print(f"ERROR {ftp_host} {e}")
+        print_log(VERBOSE, f"ERROR {ftp_host} {e}")
         return False
     except socket.timeout as t:
-        print(f"ERROR {ftp_host} {t}")
+        print_log(VERBOSE, f"ERROR {ftp_host} {t}")
         return False
 
 
@@ -191,13 +190,9 @@ def ftp_dir_remove(session, path: str) -> bool:
 
 
 def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: int) -> bool:
-    print(session)
-    print(hostname)
     seconds_minus = days_rotate * 86400
     seconds_minus = 1520
     stamp_before = backup_stamp - seconds_minus
-
-    print(f"{stamp_before}")
 
     dirs_arr = []
     for (name, facts) in session.mlsd(path=hostname):
@@ -209,7 +204,6 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
     for item in dirs_arr:
         if int(item) < stamp_before:
             dir_to_remove = f"{hostname}/{item}"
-            print(dir_to_remove)
             if not ftp_dir_remove(session, dir_to_remove):
                 return False
 
