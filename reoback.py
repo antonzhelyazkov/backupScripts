@@ -138,7 +138,7 @@ if HOSTNAME is None or HOSTNAME == '':
     print_log(VERBOSE, f"ERROR in hostname {HOSTNAME}")
     sys.exit(1)
 
-print(time.time())
+print(int(time.time()))
 
 for item_arch in CONFIG_DATA['backup']:
     OUT_FILE = f"{add_slash(CONFIG_DATA['tmp_dir'])}{item_arch['name']}.tar.gz"
