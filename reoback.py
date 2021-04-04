@@ -54,6 +54,7 @@ def remove_slash(directory):
     if directory.endswith("/"):
         size = len(directory)
         dir_return = directory[:size - 1]
+        print(dir_return)
         return dir_return
     else:
         return directory
@@ -120,7 +121,7 @@ def check_dirs_exist(dirs: list) -> dict:
 #     return file_to_check
 
 def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
-    tar_arr = ["/usr/bin/tar", "-zcvf", out_file]
+    tar_arr = ["/usr/bin/tar", "-zcf", out_file]
     if len(excludes) > 0:
         for item_exclude in excludes:
             tar_arr.extend([f"--exclude={remove_slash(item_exclude)}"])
