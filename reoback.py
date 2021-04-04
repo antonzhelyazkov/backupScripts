@@ -122,8 +122,8 @@ def create_dir(directory: str) -> bool:
         return False
 
 
-def ftp_upload(file: str):
-    print(file)
+def ftp_upload(file: str, hostname: str):
+    print(hostname, file)
 
 
 ########################################
@@ -166,7 +166,7 @@ for item_arch in CONFIG_DATA['backup']:
         sys.exit(1)
     else:
         print_log(VERBOSE, f"INFO archive successful {OUT_FILE}")
-        ftp_upload(OUT_FILE)
+        ftp_upload(OUT_FILE, HOSTNAME)
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
