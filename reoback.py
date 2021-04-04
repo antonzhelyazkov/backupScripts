@@ -144,6 +144,8 @@ for item_arch in CONFIG_DATA['backup']:
     run_tar = subprocess.run(tar_cmd, stdout=subprocess.PIPE)
     if run_tar.returncode != 0:
         print_log(VERBOSE, f"ERROR in {item_arch['path']}")
+        print(run_tar.stderr)
+        print(f"qweqwe {run_tar.stdout}")
         sys.exit(1)
     else:
         print_log(VERBOSE, f"INFO archive successful {OUT_FILE}")
