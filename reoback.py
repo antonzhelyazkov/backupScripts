@@ -147,7 +147,7 @@ if HOSTNAME is None or HOSTNAME == '':
 for item_arch in CONFIG_DATA['backup']:
     OUT_FILE = f"{add_slash(CONFIG_DATA['tmp_dir'])}{item_arch['name']}.tar.gz"
     tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], OUT_FILE)
-    out = subprocess.run(tar_cmd, shell=True)
+    out = subprocess.run(tar_cmd)
     print(f"qweqwe {out.args}")
 
 if process_nagios_file(NAGIOS_FILE):
