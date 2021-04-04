@@ -126,6 +126,7 @@ def create_dir(directory: str) -> bool:
 def create_ftp_dir(directory: str, session) -> bool:
     try:
         session.mkd(directory)
+        print_log(VERBOSE, f"INFO directory created {directory}")
         return True
     except ftplib.error_perm as perm:
         print_log(VERBOSE, f"INFO directory exists {directory}")
@@ -148,7 +149,11 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         print(f"ERROR {ftp_host} {t}")
         return False
 
-    create_ftp_dir(dir_stamp, ftp_session)
+    if not create_ftp_dir(hostname, ftp_session):
+        sys.exit(1)
+
+    if not create_ftp_dir(dir_stamp, ftp_session):
+        sys.exit(1)
 
     # ftp_dir = ftp_session.mlsd("/")
     # if any(name == hostname for name, facts in ftp_dir):
