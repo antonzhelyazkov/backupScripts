@@ -212,10 +212,14 @@ def remove_local_dir(directory: str) -> bool:
     files_arr = os.listdir(directory)
     for item in files_arr:
         file_to_remove = f"{directory}/{item}"
-        os.remove(file_to_remove)
+        try:
+            os.remove(file_to_remove)
+        except OSError as e:
+            print_log(VERBOSE, f"ERROR remove file {file_to_remove} {e}")
+            return False
 
     try:
-        os.remove(directory)
+        os.rmdir(directory)
         print_log(VERBOSE, f"INFO directory {directory} removed")
         return True
     except OSError as e:
