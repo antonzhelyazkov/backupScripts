@@ -3,6 +3,7 @@ import getopt
 import json
 import logging
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -201,7 +202,7 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
     for (name, facts) in session.mlsd(path=hostname):
         if name in ['.', '..']:
             continue
-        elif facts['type'] == 'dir':
+        elif facts['type'] == 'dir' and re.match("^\d{10}$", name):
             dirs_arr.append(name)
 
     print(dirs_arr)
