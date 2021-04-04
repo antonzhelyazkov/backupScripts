@@ -122,6 +122,10 @@ def create_dir(directory: str) -> bool:
         return False
 
 
+def ftp_upload(file: str):
+    print(file)
+
+
 ########################################
 
 config_open = open(CONFIG_FILE, encoding='utf-8')
@@ -162,6 +166,7 @@ for item_arch in CONFIG_DATA['backup']:
         sys.exit(1)
     else:
         print_log(VERBOSE, f"INFO archive successful {OUT_FILE}")
+        ftp_upload(OUT_FILE)
 
 if process_nagios_file(NAGIOS_FILE):
     os.remove(PID_FILE)
