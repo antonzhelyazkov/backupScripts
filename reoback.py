@@ -123,8 +123,16 @@ def create_dir(directory: str) -> bool:
         return False
 
 
-def create_ftp_dir(directory: str, session):
-    session.mkd(directory)
+def create_ftp_dir(directory: str, session) -> bool:
+    try:
+        session.mkd(directory)
+        return True
+    except ftplib.error_perm as perm:
+        print_log(VERBOSE, f"INFO directory exists {directory}")
+        return True
+    except ftplib.Error as e:
+        print_log(VERBOSE, f"ERROR {e}")
+        return False
 
 
 def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_user: str, ftp_pass: str) -> bool:
