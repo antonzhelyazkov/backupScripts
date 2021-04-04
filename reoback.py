@@ -129,11 +129,14 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
         print(ftp_session)
     except ftplib.Error as e:
-        print(f"ERROR {e}")
+        print(f"ERROR {ftp_host} {e}")
         return False
     except socket.timeout as t:
-        print(f"ERROR {t}")
+        print(f"ERROR {ftp_host} {t}")
         return False
+
+    ftpResponse = ftp_session.mkd(f"{hostname}/{backup_stamp}")
+    print(ftpResponse)
 
     file_fh = open(file, "rb")
     ftp_session.storbinary(f"STOR {f_name}", file_fh)
