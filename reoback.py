@@ -127,7 +127,7 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
     print(hostname, str(backup_stamp), file)
 
     try:
-        ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass)
+        ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
         print(ftp_session)
     except ftplib.Error as e:
         print(f"ERROR {e}")
