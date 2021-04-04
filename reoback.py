@@ -194,7 +194,7 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
     print(session)
     print(hostname)
     seconds_minus = days_rotate * 86400
-    seconds_minus = 1020
+    seconds_minus = 2020
     stamp_before = backup_stamp - seconds_minus
 
     print(f"{stamp_before}")
