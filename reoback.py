@@ -124,7 +124,7 @@ def create_dir(directory: str) -> bool:
 
 
 def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_user: str, ftp_pass: str) -> bool:
-
+    f_name = os.path.basename(file)
     try:
         ftp_session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
         print(ftp_session)
@@ -136,7 +136,7 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, ftp_host: str, ftp_u
         return False
 
     file_fh = open(file, "rb")
-    ftp_session.storbinary("STOR qwe", file_fh)
+    ftp_session.storbinary(f"STOR {f_name}", file_fh)
     file_fh.close()
     ftp_session.close()
 
