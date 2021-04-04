@@ -171,6 +171,10 @@ def ftp_upload(file: str, hostname: str, backup_stamp: int, session) -> bool:
         session.close()
 
 
+def ftp_backup_rotate(session, hostname: str, days_rotate: int):
+    pass
+
+
 ########################################
 
 config_open = open(CONFIG_FILE, encoding='utf-8')

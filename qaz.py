@@ -1,32 +1,40 @@
-import os
-import tarfile
+import ftplib
+import getopt
+import json
+import sys
 
-dir_q: str = "/opt/neterra-cdn-nodejs/modules/cdn-video-appender/"
-excludes = ["cdn-video-appender", "opt/neterra-cdn-nodejs/modules/cdn-video-appender/node_modules/", "node_modules"]
+CONFIG_FILE = "./config.json"
+argv = sys.argv[1:]
 
+try:
+    opts, argv = getopt.getopt(argv, "c:v", ["config=", "verbose"])
+except getopt.GetoptError as err:
+    print(err)
+    opts = []
 
-def walk_files(directory: str) -> list:
-    all_files = []
-    for item in os.listdir(directory):
-        full_path = os.path.join(directory, item)
-        if os.path.isdir(full_path):
-            all_files.extend(walk_files(full_path))
-        else:
-            all_files.append(full_path)
+for opt, arg in opts:
+    if opt in ['-c', '--config']:
+        config_file = arg
+    if opt in ['-v', '--verbose']:
+        VERBOSE = True
 
-    return all_files
-
-
-def excl(file_to_check):
-    if any(item_file in file_to_check.name for item_file in excludes):
-        return None
-    else:
-        return file_to_check
+config_open = open(CONFIG_FILE, encoding='utf-8')
+CONFIG_DATA = json.load(config_open)
 
 
-all_f = walk_files(dir_q)
+def remove_ftp_dir(ftp_sess, path):
+    for (name, properties) in ftp_sess.mlsd(path=path):
+        if name in ['.', '..']:
+            continue
+        elif properties['type'] == 'file':
+            ftp_sess.delete(f"{path}/{name}")
+        elif properties['type'] == 'dir':
+            remove_ftp_dir(ftp_sess, f"{path}/{name}")
+    ftp_sess.rmd(path)
 
-with tarfile.open('new_archive.tar.gz', 'w:gz') as archive:
-    for file in all_f:
-        archive.add(file)
-    archive.list()
+
+ftp = ftplib.FTP(CONFIG_DATA['ftp_login']['ftp_host'],
+                 CONFIG_DATA['ftp_login']['ftp_user'],
+                 CONFIG_DATA['ftp_login']['ftp_pass'])
+
+remove_ftp_dir(ftp, 'origin1.neterra.tv')
