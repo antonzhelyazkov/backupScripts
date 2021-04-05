@@ -12,7 +12,7 @@ import time
 VERBOSE = False
 CONFIG_FILE = "./config.json"
 LOG_DIR_DEFAULT = "."
-HOSTNAME = socket.gethostname()
+HOSTNAME = socket.gethostname().split(".")[0]
 argv = sys.argv[1:]
 
 try:
@@ -273,6 +273,7 @@ if HOSTNAME is None or HOSTNAME == '':
 
 BACKUP_STAMP = int(time.time())
 BACKUP_DIR = f"{add_slash(CONFIG_DATA['tmp_dir'])}{str(BACKUP_STAMP)}/"
+BACKUP_FTP_DIR = f"{HOSTNAME}-reoback"
 
 for item_arch in CONFIG_DATA['backup']:
     OUT_FILE = f"{BACKUP_DIR}{item_arch['name']}.tar.gz"
@@ -287,7 +288,7 @@ for item_arch in CONFIG_DATA['backup']:
     else:
         print_log(VERBOSE, f"INFO archive successful {OUT_FILE}")
         ftp_upload(OUT_FILE,
-                   HOSTNAME,
+                   BACKUP_FTP_DIR,
                    BACKUP_STAMP,
                    ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
                                CONFIG_DATA['ftp_login']['ftp_user'],
@@ -296,7 +297,7 @@ for item_arch in CONFIG_DATA['backup']:
 if ftp_backup_rotate(ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
                                  CONFIG_DATA['ftp_login']['ftp_user'],
                                  CONFIG_DATA['ftp_login']['ftp_pass']),
-                     HOSTNAME,
+                     BACKUP_FTP_DIR,
                      CONFIG_DATA['ftp_backup_rotate'],
                      BACKUP_STAMP):
     print_log(VERBOSE, f"INFO all backups older than {CONFIG_DATA['ftp_backup_rotate']} are removed")
