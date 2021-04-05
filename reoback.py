@@ -149,11 +149,11 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
         return False
 
 
-def ftp_upload(file: str, hostname: str, backup_stamp: int, session) -> bool:
+def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
     f_name = os.path.basename(file)
-    dir_stamp = f"{hostname}/{backup_stamp}"
+    dir_stamp = f"{remote_dir}/{backup_stamp}"
 
-    if not create_ftp_dir(hostname, session):
+    if not create_ftp_dir(remote_dir, session):
         sys.exit(1)
 
     if not create_ftp_dir(dir_stamp, session):
@@ -188,12 +188,13 @@ def ftp_dir_remove(session, path: str) -> bool:
         return False
 
 
-def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: int) -> bool:
+def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int) -> bool:
     seconds_minus = days_rotate * 86400
+    seconds_minus = 100
     stamp_before = backup_stamp - seconds_minus
 
     dirs_arr = []
-    for (name, facts) in session.mlsd(path=hostname):
+    for (name, facts) in session.mlsd(path=remote_dir):
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'dir' and re.match("^\d{10}$", name):
@@ -201,7 +202,7 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
 
     for item in dirs_arr:
         if int(item) < stamp_before:
-            dir_to_remove = f"{hostname}/{item}"
+            dir_to_remove = f"{remote_dir}/{item}"
             if not ftp_dir_remove(session, dir_to_remove):
                 return False
 
