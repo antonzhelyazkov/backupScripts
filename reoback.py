@@ -182,6 +182,7 @@ def ftp_dir_remove(session, path: str) -> bool:
 
     try:
         session.rmd(path)
+        print_log(VERBOSE, f"INFO removed {path}")
         return True
     except ftplib.Error as e:
         print_log(VERBOSE, f"ERROR remove {path} {e}")
