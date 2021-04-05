@@ -190,7 +190,7 @@ def ftp_dir_remove(session, path: str) -> bool:
 
 def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int) -> bool:
     seconds_minus = days_rotate * 86400
-    seconds_minus = 100
+    seconds_minus = 101
     stamp_before = backup_stamp - seconds_minus
 
     dirs_arr = []
