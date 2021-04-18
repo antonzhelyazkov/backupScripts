@@ -34,7 +34,7 @@ def main():
 
     formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
 
-    file_handler = logging.FileHandler('sample.log')
+    file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.ERROR)
     file_handler.setFormatter(formatter)
 
