@@ -9,7 +9,6 @@ import subprocess
 import sys
 import time
 
-
 HOSTNAME = socket.gethostname().split(".")[0]
 
 
@@ -136,10 +135,11 @@ def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
         session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=10000000)
         return True
     except ftplib.Error as e:
+        print(f"############ {e}")
         return False
     finally:
         file_fh.close()
-        session.close()
+        session.quit()
 
 
 def remove_local_dir(directory: str) -> bool:
@@ -254,15 +254,18 @@ def main():
                                    config_data['ftp_login']['ftp_user'],
                                    config_data['ftp_login']['ftp_pass']))
 
-    if ftp_backup_rotate(ftp_session(config_data['ftp_login']['ftp_host'],
-                                     config_data['ftp_login']['ftp_user'],
-                                     config_data['ftp_login']['ftp_pass']),
+    ftp_open_rotate = ftp_session(config_data['ftp_login']['ftp_host'],
+                                  config_data['ftp_login']['ftp_user'],
+                                  config_data['ftp_login']['ftp_pass'])
+    if ftp_backup_rotate(ftp_open_rotate,
                          backup_ftp_dir,
                          config_data['ftp_backup_rotate'],
                          backup_stamp):
         logger.info(f"INFO all backups older than {config_data['ftp_backup_rotate']} are removed")
+        ftp_open_rotate.quit()
     else:
         logger.info(f"ERROR in remove FTP older backups")
+        ftp_open_rotate.quit()
         sys.exit(1)
 
     if not remove_local_backups(config_data['local_backup_rotate'],
