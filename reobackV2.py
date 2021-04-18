@@ -1,6 +1,16 @@
 import argparse
 import json
 import logging
+import os
+import sys
+
+
+def add_slash(directory):
+    if not directory.endswith("/"):
+        dir_return = directory + "/"
+    else:
+        dir_return = directory
+    return dir_return
 
 
 def main():
@@ -15,8 +25,9 @@ def main():
 
     config_open = open(config_file, encoding='utf-8')
     config_data = json.load(config_open)
-
-    print(config_data['log_dir'])
+    log_file_name = os.path.basename(sys.argv[0]).split(".")
+    log_file = f"{add_slash(config_data['log_dir'])}{log_file_name}.log"
+    print(log_file)
 
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
