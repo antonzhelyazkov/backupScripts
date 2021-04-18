@@ -247,13 +247,15 @@ def main():
             sys.exit(1)
         else:
             logger.info(f"INFO archive successful {out_file}")
+            ftp_open_upload = ftp_session(config_data['ftp_login']['ftp_host'],
+                                          config_data['ftp_login']['ftp_user'],
+                                          config_data['ftp_login']['ftp_pass'])
             ftp_upload(out_file,
                        backup_ftp_dir,
                        backup_stamp,
-                       ftp_session(config_data['ftp_login']['ftp_host'],
-                                   config_data['ftp_login']['ftp_user'],
-                                   config_data['ftp_login']['ftp_pass']))
-
+                       ftp_open_upload)
+            logger.info(f"INFO upload successful {out_file}")
+            ftp_open_upload.quit()
     ftp_open_rotate = ftp_session(config_data['ftp_login']['ftp_host'],
                                   config_data['ftp_login']['ftp_user'],
                                   config_data['ftp_login']['ftp_pass'])
