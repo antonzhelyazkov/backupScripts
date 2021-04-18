@@ -12,7 +12,7 @@ import time
 VERBOSE = False
 CONFIG_FILE = "./config.json"
 LOG_DIR_DEFAULT = "."
-HOSTNAME = socket.gethostname()
+HOSTNAME = socket.gethostname().split(".")[0]
 argv = sys.argv[1:]
 
 try:
@@ -149,11 +149,11 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
         return False
 
 
-def ftp_upload(file: str, hostname: str, backup_stamp: int, session) -> bool:
+def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
     f_name = os.path.basename(file)
-    dir_stamp = f"{hostname}/{backup_stamp}"
+    dir_stamp = f"{remote_dir}/{backup_stamp}"
 
-    if not create_ftp_dir(hostname, session):
+    if not create_ftp_dir(remote_dir, session):
         sys.exit(1)
 
     if not create_ftp_dir(dir_stamp, session):
@@ -182,18 +182,19 @@ def ftp_dir_remove(session, path: str) -> bool:
 
     try:
         session.rmd(path)
+        print_log(VERBOSE, f"INFO removed {path}")
         return True
     except ftplib.Error as e:
         print_log(VERBOSE, f"ERROR remove {path} {e}")
         return False
 
 
-def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: int) -> bool:
+def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int) -> bool:
     seconds_minus = days_rotate * 86400
     stamp_before = backup_stamp - seconds_minus
 
     dirs_arr = []
-    for (name, facts) in session.mlsd(path=hostname):
+    for (name, facts) in session.mlsd(path=remote_dir):
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'dir' and re.match("^\d{10}$", name):
@@ -201,7 +202,7 @@ def ftp_backup_rotate(session, hostname: str, days_rotate: int, backup_stamp: in
 
     for item in dirs_arr:
         if int(item) < stamp_before:
-            dir_to_remove = f"{hostname}/{item}"
+            dir_to_remove = f"{remote_dir}/{item}"
             if not ftp_dir_remove(session, dir_to_remove):
                 return False
 
@@ -273,6 +274,7 @@ if HOSTNAME is None or HOSTNAME == '':
 
 BACKUP_STAMP = int(time.time())
 BACKUP_DIR = f"{add_slash(CONFIG_DATA['tmp_dir'])}{str(BACKUP_STAMP)}/"
+BACKUP_FTP_DIR = f"{HOSTNAME}-reoback"
 
 for item_arch in CONFIG_DATA['backup']:
     OUT_FILE = f"{BACKUP_DIR}{item_arch['name']}.tar.gz"
@@ -287,7 +289,7 @@ for item_arch in CONFIG_DATA['backup']:
     else:
         print_log(VERBOSE, f"INFO archive successful {OUT_FILE}")
         ftp_upload(OUT_FILE,
-                   HOSTNAME,
+                   BACKUP_FTP_DIR,
                    BACKUP_STAMP,
                    ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
                                CONFIG_DATA['ftp_login']['ftp_user'],
@@ -296,7 +298,7 @@ for item_arch in CONFIG_DATA['backup']:
 if ftp_backup_rotate(ftp_session(CONFIG_DATA['ftp_login']['ftp_host'],
                                  CONFIG_DATA['ftp_login']['ftp_user'],
                                  CONFIG_DATA['ftp_login']['ftp_pass']),
-                     HOSTNAME,
+                     BACKUP_FTP_DIR,
                      CONFIG_DATA['ftp_backup_rotate'],
                      BACKUP_STAMP):
     print_log(VERBOSE, f"INFO all backups older than {CONFIG_DATA['ftp_backup_rotate']} are removed")
