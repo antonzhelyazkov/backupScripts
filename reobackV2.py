@@ -10,6 +10,10 @@ class PidFileExists(Exception):
     pass
 
 
+class DirectoryMissing(Exception):
+    pass
+
+
 def add_slash(directory):
     if not directory.endswith("/"):
         dir_return = directory + "/"
@@ -29,6 +33,16 @@ def process_pid_file(pid_f: str) -> bool:
             return True
         except IOError as e:
             raise IOError(e)
+
+
+def check_dirs_exist(dirs: list):
+    err_dirs = []
+    for item in dirs:
+        if not os.path.isdir(item):
+            err_dirs.append(item)
+
+    if len(err_dirs) > 0:
+        raise DirectoryMissing(err_dirs)
 
 
 def main():
@@ -66,6 +80,16 @@ def main():
         logger.info(f"INFO pid file {pid_file} exists")
         sys.exit(1)
     except OSError as e:
+        logger.exception(f"#### {e}")
+
+    dirs_exists = [config_data['tmp_dir'], config_data['log_dir'], config_data['pid_file_path']]
+    dirs_to_archive = []
+    for item_dir in config_data['backup']:
+        dirs_exists.append(item_dir['path'])
+        dirs_to_archive.append(item_dir['path'])
+    try:
+        check_dirs_exist(dirs_exists)
+    except DirectoryMissing as e:
         logger.exception(f"#### {e}")
 
     try:
