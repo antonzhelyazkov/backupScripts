@@ -25,7 +25,7 @@ def main():
 
     config_open = open(config_file, encoding='utf-8')
     config_data = json.load(config_open)
-    log_file_name = os.path.basename(sys.argv[0]).split(".")
+    log_file_name = os.path.basename(sys.argv[0]).split(".")[0]
     log_file = f"{add_slash(config_data['log_dir'])}{log_file_name}.log"
     print(log_file)
 
