@@ -72,6 +72,7 @@ def main():
         f = open(nagios_file, "w")
         f.write(str(int(time.time())))
         f.close()
+        os.remove(pid_file)
     except IOError as e:
         logger.exception(f"##### {e}")
 
