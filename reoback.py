@@ -139,7 +139,6 @@ def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
         return False
     finally:
         file_fh.close()
-        session.quit()
 
 
 def remove_local_dir(directory: str) -> bool:
