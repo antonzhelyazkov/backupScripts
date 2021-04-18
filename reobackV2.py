@@ -42,7 +42,8 @@ def main():
     stream_handler.setFormatter(formatter)
 
     logger.addHandler(file_handler)
-    logger.addHandler(stream_handler)
+    if verbose:
+        logger.addHandler(stream_handler)
 
     logger.error("qweqwe")
 
