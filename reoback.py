@@ -78,7 +78,8 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
         return session
     except ftplib.Error as e:
         raise ftplib.Error(e)
-    except socket.timeout:
+    except socket.timeout as to:
+        print(f"############ {to}")
         raise socket.timeout()
 
 
