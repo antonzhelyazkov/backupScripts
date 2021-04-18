@@ -58,8 +58,8 @@ def main():
 
     logger.addHandler(file_handler)
 
-    pid_file = f"{add_slash(config_data['pid_file_path'])}{script_name}.pid"
-    nagios_file = f"{add_slash(config_data['pid_file_path'])}{script_name}.nagios"
+    pid_file = f"{add_slash(config_data['pid_file_path'])}{script_name[0]}.pid"
+    nagios_file = f"{add_slash(config_data['pid_file_path'])}{script_name[0]}.nagios"
     try:
         process_pid_file(pid_file)
     except PidFileExists:
