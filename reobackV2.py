@@ -136,7 +136,7 @@ def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
         try:
             session.mkd(directory)
         except ftplib.error_perm as perm:
-            raise ftplib.error_perm(perm)
+            pass
         except ftplib.Error as e:
             raise ftplib.Error(e)
 
