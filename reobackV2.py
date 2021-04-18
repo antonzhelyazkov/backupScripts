@@ -27,6 +27,7 @@ def main():
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
 
+    print("qwe")
 
 if __name__ == "__main__":
     main()
