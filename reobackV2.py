@@ -118,16 +118,6 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
     return True
 
 
-# def create_ftp_dir(directory: str, session) -> bool:
-#     try:
-#         session.mkd(directory)
-#         return True
-#     except ftplib.error_perm as perm:
-#         return True
-#     except ftplib.Error as e:
-#         return False
-
-
 def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
     f_name = os.path.basename(file)
     dir_stamp = f"{remote_dir}/{backup_stamp}"
@@ -142,7 +132,7 @@ def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
 
     file_fh = open(file, "rb")
     try:
-        session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh)
+        session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=1000000)
         return True
     except ftplib.Error as e:
         return False
