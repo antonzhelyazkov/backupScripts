@@ -1,4 +1,5 @@
 import argparse
+import json
 import logging
 
 
@@ -11,6 +12,11 @@ def main():
     args_cmd = parser.parse_args()
     config_file = args_cmd.config
     verbose = args_cmd.verbose
+
+    config_open = open(config_file, encoding='utf-8')
+    config_data = json.load(config_open)
+
+    print(config_data['log_dir'])
 
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
