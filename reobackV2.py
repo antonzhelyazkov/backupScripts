@@ -44,6 +44,8 @@ def main():
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
 
+    logger.debug("qweqwe")
+
 
 if __name__ == "__main__":
     main()
