@@ -132,7 +132,7 @@ def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
 
     file_fh = open(file, "rb")
     try:
-        session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=1000000)
+        session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=10000000)
         return True
     except ftplib.Error as e:
         return False
