@@ -258,7 +258,7 @@ def main():
     ftp_open_rotate = ftp_session(config_data['ftp_login']['ftp_host'],
                                   config_data['ftp_login']['ftp_user'],
                                   config_data['ftp_login']['ftp_pass'])
-    logger.info(f"INFO trying to remove {backup_ftp_dir}/{backup_stamp}")
+    logger.info(f"INFO trying to remove {backup_ftp_dir} {backup_stamp}")
     if ftp_backup_rotate(ftp_open_rotate,
                          backup_ftp_dir,
                          config_data['ftp_backup_rotate'],
