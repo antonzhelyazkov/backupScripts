@@ -82,7 +82,7 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
         raise socket.timeout()
 
 
-def ftp_dir_remove(session, path: str) -> bool:
+def ftp_dir_remove(session, path: str):
     for (name, facts) in session.mlsd(path=path):
         if name in ['.', '..']:
             continue
@@ -93,12 +93,11 @@ def ftp_dir_remove(session, path: str) -> bool:
 
     try:
         session.rmd(path)
-        return True
     except ftplib.Error as e:
-        return False
+        raise ftplib.Error(e)
 
 
-def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int) -> bool:
+def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int):
     seconds_minus = days_rotate * 86400
     stamp_before = backup_stamp - seconds_minus
 
@@ -112,10 +111,10 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
     for item in dirs_arr:
         if int(item) < stamp_before:
             dir_to_remove = f"{remote_dir}/{item}"
-            if not ftp_dir_remove(session, dir_to_remove):
-                return False
-
-    return True
+            try:
+                ftp_dir_remove(session, dir_to_remove)
+            except ftplib.Error as e:
+                raise ftplib.Error(e)
 
 
 def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
@@ -259,16 +258,15 @@ def main():
                                   config_data['ftp_login']['ftp_user'],
                                   config_data['ftp_login']['ftp_pass'])
     logger.info(f"INFO trying to remove {backup_ftp_dir} {backup_stamp}")
-    if ftp_backup_rotate(ftp_open_rotate,
-                         backup_ftp_dir,
-                         config_data['ftp_backup_rotate'],
-                         backup_stamp):
+    try:
+        ftp_backup_rotate(ftp_open_rotate,
+                          backup_ftp_dir,
+                          config_data['ftp_backup_rotate'],
+                          backup_stamp)
         logger.info(f"INFO all backups older than {config_data['ftp_backup_rotate']} are removed")
         ftp_open_rotate.quit()
-    else:
-        logger.info(f"ERROR in remove FTP older backups")
-        ftp_open_rotate.quit()
-        sys.exit(1)
+    except ftplib.Error as err_rotate:
+        logger.exception(f"@@@@@@@@@@@@@@@ {err_rotate}")
 
     if not remove_local_backups(config_data['local_backup_rotate'],
                                 add_slash(config_data['tmp_dir']),
