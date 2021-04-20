@@ -107,8 +107,10 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
     stamp_before = backup_stamp - seconds_minus
 
     try:
+        print(f"############## try mlsd")
         ftp_dirs = session.mlsd(path=remote_dir)
     except ftplib.Error as err_rotate:
+        print(f"################ ERR mlsd")
         raise ErrFtpRotate(err_rotate)
 
     dirs_arr = []
