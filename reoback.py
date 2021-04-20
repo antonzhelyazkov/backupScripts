@@ -98,6 +98,7 @@ def ftp_dir_remove(session, path: str):
 
 
 def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int):
+    print(f"########### start rotate")
     seconds_minus = days_rotate * 86400
     stamp_before = backup_stamp - seconds_minus
 
