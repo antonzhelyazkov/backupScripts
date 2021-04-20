@@ -20,6 +20,10 @@ class DirectoryMissing(Exception):
     pass
 
 
+class ErrFtpRotate(Exception):
+    pass
+
+
 def add_slash(directory):
     if not directory.endswith("/"):
         dir_return = directory + "/"
@@ -102,8 +106,13 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
     seconds_minus = days_rotate * 86400
     stamp_before = backup_stamp - seconds_minus
 
+    try:
+        ftp_dirs = session.mlsd(path=remote_dir)
+    except ftplib.Error as err_rotate:
+        raise ErrFtpRotate(err_rotate)
+
     dirs_arr = []
-    for (name, facts) in session.mlsd(path=remote_dir):
+    for (name, facts) in ftp_dirs:
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'dir' and re.match("^\d{10}$", name):
@@ -268,6 +277,9 @@ def main():
         ftp_open_rotate.quit()
     except ftplib.Error as err_rotate:
         logger.exception(f"@@@@@@@@@@@@@@@ {err_rotate}")
+    except ErrFtpRotate as err_mlsd:
+        logger.exception(f"$$$$$$$$$$$$$$$ {err_mlsd}")
+        sys.exit(1)
 
     if not remove_local_backups(config_data['local_backup_rotate'],
                                 add_slash(config_data['tmp_dir']),
