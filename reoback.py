@@ -258,7 +258,6 @@ def main():
             logger.info(f"ERROR in {run_tar.stderr}")
             sys.exit(1)
         else:
-
             logger.info(f"INFO archive successful {out_file}")
             ftp_open_upload = ftp_session(config_data['ftp_login']['ftp_host'],
                                           config_data['ftp_login']['ftp_user'],
