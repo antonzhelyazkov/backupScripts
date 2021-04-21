@@ -75,14 +75,15 @@ def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
     return tar_arr
 
 
-def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
+def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str, print_local):
     try:
         session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
         return session
     except ftplib.Error as e:
+        print_local(f"session {e}")
         raise ftplib.Error(e)
     except socket.timeout as to:
-        print(f"############ {to}")
+        print_local(f"session {to}")
         raise socket.timeout()
 
 
@@ -101,16 +102,16 @@ def ftp_dir_remove(session, path: str):
         raise ftplib.Error(e)
 
 
-def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int):
-    print(f"########### start rotate")
+def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int, print_local):
+    print_local(f"start rotate")
     seconds_minus = days_rotate * 86400
     stamp_before = backup_stamp - seconds_minus
 
     try:
-        print(f"############## try mlsd")
+        print_local(f"try mlsd")
         ftp_dirs = session.mlsd(path=remote_dir)
     except ftplib.Error as err_rotate:
-        print(f"################ ERR mlsd")
+        print_local(f"ERROR mlsd")
         raise ErrFtpRotate(err_rotate)
 
     dirs_arr = []
@@ -259,7 +260,8 @@ def main():
             logger.info(f"INFO archive successful {out_file}")
             ftp_open_upload = ftp_session(config_data['ftp_login']['ftp_host'],
                                           config_data['ftp_login']['ftp_user'],
-                                          config_data['ftp_login']['ftp_pass'])
+                                          config_data['ftp_login']['ftp_pass'],
+                                          lambda msg: logger.info(msg))
             ftp_upload(out_file,
                        backup_ftp_dir,
                        backup_stamp,
@@ -268,13 +270,15 @@ def main():
             ftp_open_upload.quit()
     ftp_open_rotate = ftp_session(config_data['ftp_login']['ftp_host'],
                                   config_data['ftp_login']['ftp_user'],
-                                  config_data['ftp_login']['ftp_pass'])
+                                  config_data['ftp_login']['ftp_pass'],
+                                  lambda msg: logger.info(msg))
     logger.info(f"INFO trying to remove {backup_ftp_dir} {backup_stamp}")
     try:
         ftp_backup_rotate(ftp_open_rotate,
                           backup_ftp_dir,
                           config_data['ftp_backup_rotate'],
-                          backup_stamp)
+                          backup_stamp,
+                          lambda msg: logger.info(msg))
         logger.info(f"INFO all backups older than {config_data['ftp_backup_rotate']} are removed")
         ftp_open_rotate.quit()
     except ftplib.Error as err_rotate:
