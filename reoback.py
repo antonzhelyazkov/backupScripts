@@ -77,6 +77,7 @@ def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
 
 def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str):
     try:
+        print(f"%%%%%%%%%%%%%%%%%%%%%%%% session start")
         session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
         return session
     except ftplib.Error as e:
