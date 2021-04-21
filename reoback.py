@@ -24,6 +24,10 @@ class ErrFtpRotate(Exception):
     pass
 
 
+class SocketTimeout(Exception):
+    pass
+
+
 def add_slash(directory):
     if not directory.endswith("/"):
         dir_return = directory + "/"
@@ -114,6 +118,9 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
     except ftplib.Error as err_rotate:
         print_local(f"ERROR mlsd")
         raise ErrFtpRotate(err_rotate)
+    except socket.timeout as st:
+        print_local(f"socket {st}")
+        raise SocketTimeout(st)
 
     dirs_arr = []
     for (name, facts) in ftp_dirs:
@@ -126,6 +133,7 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
         if int(item) < stamp_before:
             dir_to_remove = f"{remote_dir}/{item}"
             try:
+                print_local(f"remove {dir_to_remove}")
                 ftp_dir_remove(session, dir_to_remove)
             except ftplib.Error as e:
                 raise ftplib.Error(e)
