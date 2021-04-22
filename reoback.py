@@ -277,6 +277,7 @@ def main():
                        backup_stamp,
                        ftp_open_upload)
             logger.info(f"INFO upload successful {out_file}")
+            ftp_open_upload.close()
             ftp_open_upload.quit()
     ftp_open_rotate = ftp_session(config_data['ftp_login']['ftp_host'],
                                   config_data['ftp_login']['ftp_user'],
