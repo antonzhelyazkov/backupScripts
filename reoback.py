@@ -295,6 +295,9 @@ def main():
     except ErrFtpRotate as err_mlsd:
         logger.exception(f"$$$$$$$$$$$$$$$ {err_mlsd}")
         sys.exit(1)
+    except SocketTimeout as s_to:
+        logger.exception(f"SOCKET {s_to}")
+        sys.exit(1)
 
     if not remove_local_backups(config_data['local_backup_rotate'],
                                 add_slash(config_data['tmp_dir']),
