@@ -2,7 +2,7 @@
   "tmp_dir": "/mnt/store/reoback",
   "log_dir": "/var/log/",
   "pid_file_path": "/root/",
-  "ftp_backup_rotate": 7,
+  "ftp_backup_rotate": 6,
   "local_backup_rotate": 1,
   "ftp_login": {
     "ftp_host": "10.10.10.10",
