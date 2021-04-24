@@ -106,6 +106,7 @@ def ftp_dir_remove(session, path: str):
             except socket.timeout as to:
                 print(f"TOOOO {to}")
         elif facts['type'] == 'dir':
+            print(f"REMOVE dir {path}/{name}")
             ftp_dir_remove(session, f"{path}/{name}")
 
     try:
