@@ -143,6 +143,7 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
             dir_to_remove = f"{remote_dir}/{item}"
             try:
                 print_local(f"remove {dir_to_remove}")
+                print(f"remove dir {dir_to_remove}")
                 ftp_dir_remove(session, dir_to_remove)
             except ftplib.Error as e:
                 raise ftplib.Error(e)
