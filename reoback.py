@@ -102,6 +102,8 @@ def ftp_dir_remove(session, path: str):
                 session.delete(f"{path}/{name}")
             except ftplib.Error as e:
                 print(f"ERRRR {e}")
+            except socket.timeout as to:
+                print(f"TOOOO {to}")
         elif facts['type'] == 'dir':
             ftp_dir_remove(session, f"{path}/{name}")
 
