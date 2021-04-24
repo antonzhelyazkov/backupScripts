@@ -97,7 +97,7 @@ def ftp_dir_remove(session, path: str):
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'file':
-            print(f"@@@@@@@@@@@ {name} {facts}")
+            print(f"@@@@@@@@@@@ {name}")
             try:
                 session.delete(f"{path}/{name}")
             except ftplib.Error as e:
