@@ -93,14 +93,11 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str, print_local):
 
 
 def ftp_dir_remove(session, path_q: str):
-    print(f"START {path_q}")
     mlsd_facts = session.mlsd(path=path_q)
-    print(mlsd_facts)
     for (name, facts) in mlsd_facts:
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'file':
-            print(f"@@@@@@@@@@@ {path_q}/{name}")
             try:
                 session.delete(f"{path_q}/{name}")
             except ftplib.Error as e:
@@ -108,13 +105,11 @@ def ftp_dir_remove(session, path_q: str):
             except socket.timeout as to:
                 print(f"TOOOO {to}")
         elif facts['type'] == 'dir':
-            print(f"REMOVE dir {path_q}/{name}")
             ftp_dir_remove(session, f"{path_q}/{name}")
 
     try:
         session.rmd(path_q)
     except ftplib.Error as e:
-        print(e)
         raise ftplib.Error(e)
 
 
@@ -145,7 +140,6 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
             dir_to_remove = f"{remote_dir}/{item}"
             try:
                 print_local(f"remove {dir_to_remove}")
-                print(f"remove dir {dir_to_remove}")
                 ftp_dir_remove(session, dir_to_remove)
             except ftplib.Error as e:
                 raise ftplib.Error(e)
@@ -168,7 +162,6 @@ def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
         session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=10000000)
         return True
     except ftplib.Error as e:
-        print(f"############ {e}")
         return False
     finally:
         file_fh.close()
