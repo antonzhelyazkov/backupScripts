@@ -94,7 +94,9 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str, print_local):
 
 def ftp_dir_remove(session, path_q: str):
     print(f"START {path_q}")
-    for (name, facts) in session.mlsd(path=path_q):
+    mlsd_facts = session.mlsd(path=path_q)
+    print(mlsd_facts)
+    for (name, facts) in mlsd_facts:
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'file':
