@@ -126,6 +126,7 @@ def ftp_dir_remove(session, path_q: str, print_local, ftp_host, ftp_user, ftp_pa
                 print_local(f"trying to delete {path_q}/{name}")
                 # session.delete(f"{path_q}/{name}")
                 c = pycurl.Curl()
+                c.setopt(pycurl.VERBOSE, 0)
                 c.setopt(pycurl.URL, f'ftp://{ftp_host}')
                 c.setopt(pycurl.USERPWD, f'{ftp_user}:{ftp_pass}')
                 c.setopt(pycurl.QUOTE, [f'DELE {path_q}/{name}'])
@@ -133,7 +134,7 @@ def ftp_dir_remove(session, path_q: str, print_local, ftp_host, ftp_user, ftp_pa
                 c.close()
             except ftplib.Error as e:
                 print_local(f"ERROR {e}")
-            except socket.timeout as to:
+            except pycurl.error as to:
                 print_local(f"ERROR {to}")
         elif facts['type'] == 'dir':
             ftp_dir_remove(session, f"{path_q}/{name}", print_local, ftp_host, ftp_user, ftp_pass)
