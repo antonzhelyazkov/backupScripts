@@ -9,6 +9,8 @@ import subprocess
 import sys
 import time
 
+import pycurl
+
 HOSTNAME = socket.gethostname().split(".")[0]
 
 
@@ -92,7 +94,29 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str, print_local):
         raise socket.timeout()
 
 
-def ftp_dir_remove(session, path_q: str, print_local):
+# def ftp_dir_remove(session, path_q: str, print_local):
+#     mlsd_facts = session.mlsd(path=path_q)
+#     for (name, facts) in mlsd_facts:
+#         if name in ['.', '..']:
+#             continue
+#         elif facts['type'] == 'file':
+#             try:
+#                 print_local(f"trying to delete {path_q}/{name}")
+#                 session.delete(f"{path_q}/{name}")
+#             except ftplib.Error as e:
+#                 print_local(f"ERROR {e}")
+#             except socket.timeout as to:
+#                 print_local(f"ERROR {to}")
+#         elif facts['type'] == 'dir':
+#             ftp_dir_remove(session, f"{path_q}/{name}", print_local)
+#
+#     try:
+#         session.rmd(path_q)
+#     except ftplib.Error as e:
+#         raise ftplib.Error(e)
+
+
+def ftp_dir_remove(session, path_q: str, print_local, ftp_host, ftp_user, ftp_pass):
     mlsd_facts = session.mlsd(path=path_q)
     for (name, facts) in mlsd_facts:
         if name in ['.', '..']:
@@ -100,13 +124,19 @@ def ftp_dir_remove(session, path_q: str, print_local):
         elif facts['type'] == 'file':
             try:
                 print_local(f"trying to delete {path_q}/{name}")
-                session.delete(f"{path_q}/{name}")
+                # session.delete(f"{path_q}/{name}")
+                c = pycurl.Curl()
+                c.setopt(pycurl.URL, f'ftp://{ftp_host}')
+                c.setopt(pycurl.USERPWD, f'{ftp_user}:{ftp_pass}')
+                c.setopt(pycurl.QUOTE, [f'DELE {path_q}/{name}'])
+                c.perform()
+                c.close()
             except ftplib.Error as e:
                 print_local(f"ERROR {e}")
             except socket.timeout as to:
                 print_local(f"ERROR {to}")
         elif facts['type'] == 'dir':
-            ftp_dir_remove(session, f"{path_q}/{name}", print_local)
+            ftp_dir_remove(session, f"{path_q}/{name}", print_local, ftp_host, ftp_user, ftp_pass)
 
     try:
         session.rmd(path_q)
@@ -114,7 +144,8 @@ def ftp_dir_remove(session, path_q: str, print_local):
         raise ftplib.Error(e)
 
 
-def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int, print_local):
+def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int,
+                      print_local, ftp_host, ftp_user, ftp_pass):
     print_local(f"start rotate")
     seconds_minus = days_rotate * 86400
     stamp_before = backup_stamp - seconds_minus
@@ -141,7 +172,7 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
             dir_to_remove = f"{remote_dir}/{item}"
             try:
                 print_local(f"remove {dir_to_remove}")
-                ftp_dir_remove(session, dir_to_remove, print_local)
+                ftp_dir_remove(session, dir_to_remove, print_local, ftp_host, ftp_user, ftp_pass)
             except ftplib.Error as e:
                 raise ftplib.Error(e)
 
@@ -294,7 +325,10 @@ def main():
                           backup_ftp_dir,
                           config_data['ftp_backup_rotate'],
                           backup_stamp,
-                          lambda msg: logger.info(msg))
+                          lambda msg: logger.info(msg),
+                          config_data['ftp_login']['ftp_host'],
+                          config_data['ftp_login']['ftp_user'],
+                          config_data['ftp_login']['ftp_pass'])
         logger.info(f"INFO all backups older than {config_data['ftp_backup_rotate']} are removed")
         ftp_open_rotate.quit()
     except ftplib.Error as err_rotate:
