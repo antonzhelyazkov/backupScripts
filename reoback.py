@@ -92,20 +92,21 @@ def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str, print_local):
         raise socket.timeout()
 
 
-def ftp_dir_remove(session, path_q: str):
+def ftp_dir_remove(session, path_q: str, print_local):
     mlsd_facts = session.mlsd(path=path_q)
     for (name, facts) in mlsd_facts:
         if name in ['.', '..']:
             continue
         elif facts['type'] == 'file':
             try:
+                print_local(f"trying to delete {path_q}/{name}")
                 session.delete(f"{path_q}/{name}")
             except ftplib.Error as e:
-                print(f"ERRRR {e}")
+                print_local(f"ERROR {e}")
             except socket.timeout as to:
-                print(f"TOOOO {to}")
+                print_local(f"ERROR {to}")
         elif facts['type'] == 'dir':
-            ftp_dir_remove(session, f"{path_q}/{name}")
+            ftp_dir_remove(session, f"{path_q}/{name}", print_local)
 
     try:
         session.rmd(path_q)
@@ -140,7 +141,7 @@ def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: 
             dir_to_remove = f"{remote_dir}/{item}"
             try:
                 print_local(f"remove {dir_to_remove}")
-                ftp_dir_remove(session, dir_to_remove)
+                ftp_dir_remove(session, dir_to_remove, print_local)
             except ftplib.Error as e:
                 raise ftplib.Error(e)
 
