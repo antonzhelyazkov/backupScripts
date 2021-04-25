@@ -257,32 +257,32 @@ def main():
     backup_dir = f"{add_slash(config_data['tmp_dir'])}{str(backup_stamp)}/"
     backup_ftp_dir = f"{HOSTNAME}-reoback"
 
-    for item_arch in config_data['backup']:
-        out_file = f"{backup_dir}{item_arch['name']}.tar.gz"
-        try:
-            os.makedirs(backup_dir, exist_ok=True)
-        except OSError as e:
-            logger.exception(f"#### {e}")
-            sys.exit(1)
-        tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], out_file)
-        run_tar = subprocess.run(tar_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        if run_tar.returncode != 0:
-            logger.info(f"ERROR in {item_arch['path']}")
-            logger.info(f"ERROR in {run_tar.stderr}")
-            sys.exit(1)
-        else:
-            logger.info(f"INFO archive successful {out_file}")
-            ftp_open_upload = ftp_session(config_data['ftp_login']['ftp_host'],
-                                          config_data['ftp_login']['ftp_user'],
-                                          config_data['ftp_login']['ftp_pass'],
-                                          lambda msg: logger.info(msg))
-            ftp_upload(out_file,
-                       backup_ftp_dir,
-                       backup_stamp,
-                       ftp_open_upload)
-            logger.info(f"INFO upload successful {out_file}")
-            ftp_open_upload.close()
-            # ftp_open_upload.quit()
+    # for item_arch in config_data['backup']:
+    #     out_file = f"{backup_dir}{item_arch['name']}.tar.gz"
+    #     try:
+    #         os.makedirs(backup_dir, exist_ok=True)
+    #     except OSError as e:
+    #         logger.exception(f"#### {e}")
+    #         sys.exit(1)
+    #     tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], out_file)
+    #     run_tar = subprocess.run(tar_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #     if run_tar.returncode != 0:
+    #         logger.info(f"ERROR in {item_arch['path']}")
+    #         logger.info(f"ERROR in {run_tar.stderr}")
+    #         sys.exit(1)
+    #     else:
+    #         logger.info(f"INFO archive successful {out_file}")
+    #         ftp_open_upload = ftp_session(config_data['ftp_login']['ftp_host'],
+    #                                       config_data['ftp_login']['ftp_user'],
+    #                                       config_data['ftp_login']['ftp_pass'],
+    #                                       lambda msg: logger.info(msg))
+    #         ftp_upload(out_file,
+    #                    backup_ftp_dir,
+    #                    backup_stamp,
+    #                    ftp_open_upload)
+    #         logger.info(f"INFO upload successful {out_file}")
+    #         ftp_open_upload.close()
+    #         # ftp_open_upload.quit()
     ftp_open_rotate = ftp_session(config_data['ftp_login']['ftp_host'],
                                   config_data['ftp_login']['ftp_user'],
                                   config_data['ftp_login']['ftp_pass'],
