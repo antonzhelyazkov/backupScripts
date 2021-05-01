@@ -18,7 +18,7 @@ def add_slash(directory):
 @log_on_start
 @log_on_error
 @log_on_end
-def display_info(log_file, qwe):
+def display_info(log_file, message):
     pass
 
 
