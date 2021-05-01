@@ -11,12 +11,11 @@ def my_logger(orig_func):
 
 
 def main():
-    import time
 
     @my_logger
     def display_info(name, age):
-        time.sleep(1)
-        print('display_info ran with arguments ({}, {})'.format(name, age))
+        if True:
+            print('display_info ran with arguments ({}, {})'.format(name, age))
 
     display_info("qweqwe", 1232)
 
