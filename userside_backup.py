@@ -1,19 +1,23 @@
 import argparse
+import json
+import os
+import sys
+
+from logdecorator import log_on_start, log_on_end, log_on_error, log_exception
 
 
-def my_logger(orig_func):
-    import logging
-    logging.basicConfig(filename=f'{orig_func.__name__}', level=logging.INFO)
-
-    def wrapper(*args, **kwargs):
-        logging.info(f'Ran with args: {args}, and kwargs: {kwargs}')
-        return orig_func(*args, **kwargs)
-
-    return wrapper
+def add_slash(directory):
+    if not directory.endswith("/"):
+        dir_return = directory + "/"
+    else:
+        dir_return = directory
+    return dir_return
 
 
-@my_logger
-def display_info(name, age):
+@log_on_start
+@log_on_error
+@log_on_end
+def display_info(log_file, qwe):
     pass
 
 
@@ -24,8 +28,12 @@ def main():
 
     args_cmd = parser.parse_args()
     config_file = args_cmd.config
+    config_open = open(config_file, encoding='utf-8')
+    config_data = json.load(config_open)
+    script_name = os.path.basename(sys.argv[0]).split(".")
+    log_file = f"{add_slash(config_data['log_dir'])}{script_name[0]}.log"
 
-    display_info(config_file, 1232)
+    display_info(log_file, 1232)
 
 
 if __name__ == "__main__":
