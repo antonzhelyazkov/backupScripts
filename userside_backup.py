@@ -15,8 +15,9 @@ def add_slash(directory):
     return dir_return
 
 
-@log_on_start
-@log_on_error
+@log_on_start(logging.DEBUG, "start")
+@log_on_error(logging.ERROR, "error")
+@log_on_end(logging.DEBUG, "finish")
 def display_info(**kwargs):
     pass
 
