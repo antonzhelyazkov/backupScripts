@@ -18,7 +18,7 @@ def main():
         time.sleep(1)
         print('display_info ran with arguments ({}, {})'.format(name, age))
 
-    display_info("qweqwe", 123)
+    display_info("qweqwe", 1232)
 
 
 if __name__ == "__main__":
