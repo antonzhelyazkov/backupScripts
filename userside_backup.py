@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 import os
 import sys
 
@@ -32,6 +33,8 @@ def main():
     config_data = json.load(config_open)
     script_name = os.path.basename(sys.argv[0]).split(".")
     log_file = f"{add_slash(config_data['log_dir'])}{script_name[0]}.log"
+
+    logging.basicConfig(level=logging.INFO)
 
     display_info(log_file, 1232)
 
