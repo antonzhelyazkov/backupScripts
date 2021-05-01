@@ -18,7 +18,7 @@ def add_slash(directory):
 @log_on_start
 @log_on_error
 @log_on_end
-def display_info(message):
+def display_info(**kwargs):
     pass
 
 
@@ -36,7 +36,7 @@ def main():
 
     logging.basicConfig(level=logging.INFO)
 
-    display_info(1232)
+    display_info(message="qweqwe")
 
 
 if __name__ == "__main__":
