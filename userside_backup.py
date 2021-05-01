@@ -10,13 +10,14 @@ def my_logger(orig_func):
     return wrapper
 
 
-def main():
+@my_logger
+def display_info(name, age):
+    # if True:
+    #     print('display_info ran with arguments ({}, {})'.format(name, age))
+    pass
 
-    @my_logger
-    def display_info(name, age):
-        # if True:
-        #     print('display_info ran with arguments ({}, {})'.format(name, age))
-        pass
+
+def main():
 
     display_info("qweqwe", 1232)
 
