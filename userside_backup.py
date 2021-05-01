@@ -1,3 +1,5 @@
+import argparse
+
 
 def my_logger(orig_func):
     import logging
@@ -12,14 +14,18 @@ def my_logger(orig_func):
 
 @my_logger
 def display_info(name, age):
-    # if True:
-    #     print('display_info ran with arguments ({}, {})'.format(name, age))
     pass
 
 
 def main():
+    parser = argparse.ArgumentParser()
 
-    display_info("qweqwe", 1232)
+    parser.add_argument('-c', '--config', type=str, required=True, help="Path to config file", dest='config')
+
+    args_cmd = parser.parse_args()
+    config_file = args_cmd.config
+
+    display_info(config_file, 1232)
 
 
 if __name__ == "__main__":
