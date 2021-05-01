@@ -13,6 +13,7 @@ def my_logger(orig_func):
 def main():
     import time
 
+    @my_logger
     def display_info(name, age):
         time.sleep(1)
         print('display_info ran with arguments ({}, {})'.format(name, age))
