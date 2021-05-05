@@ -39,6 +39,10 @@ def add_slash(directory):
     return dir_return
 
 
+def test_log(print_log):
+    print_log(f"test_log wqewerwer")
+
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -57,6 +61,7 @@ def main():
     print_log = PrintLog(log_file)
     print_log.log(verbose, f"test msg")
 
+    test_log(lambda msg: print_log.log(verbose, msg))
 
 if __name__ == "__main__":
     main()
