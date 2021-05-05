@@ -23,7 +23,9 @@ class PrintLog:
         stream_handler.setFormatter(formatter)
 
         if verbose:
-            pass
+            logger.addHandler(file_handler)
+            logger.addHandler(stream_handler)
+            logger.info(msg)
         else:
             logger.addHandler(file_handler)
             logger.info(msg)
