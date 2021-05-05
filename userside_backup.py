@@ -26,6 +26,7 @@ class PrintLog:
             pass
         else:
             logger.addHandler(file_handler)
+            logger.info(msg)
 
 
 def add_slash(directory):
