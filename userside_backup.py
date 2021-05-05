@@ -5,34 +5,6 @@ import os
 import sys
 
 
-# class PrintLog:
-#     def __init__(self, log_file):
-#         self.log_file = log_file
-#
-#     def log(self, **kwargs):
-#         verbose = kwargs['verbose']
-#         msg = kwargs['msg']
-#         logger = logging.getLogger(__name__)
-#         logger.setLevel(logging.DEBUG)
-#
-#         formatter = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
-#
-#         file_handler = logging.FileHandler(self.log_file)
-#         file_handler.setLevel(logging.INFO)
-#         file_handler.setFormatter(formatter)
-#
-#         stream_handler = logging.StreamHandler()
-#         stream_handler.setFormatter(formatter)
-#
-#         if verbose:
-#             # logger.addHandler(file_handler)
-#             logger.addHandler(stream_handler)
-#             logger.info(msg)
-#         else:
-#             logger.addHandler(file_handler)
-#             logger.info(msg)
-
-
 def add_slash(directory):
     if not directory.endswith("/"):
         dir_return = directory + "/"
@@ -68,8 +40,11 @@ def main():
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
 
-    logger.addHandler(file_handler)
-    logger.addHandler(stream_handler)
+    if verbose:
+        logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
+    else:
+        logger.addHandler(file_handler)
 
     logger.info("qweqwe")
 
