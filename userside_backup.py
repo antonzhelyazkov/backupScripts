@@ -22,13 +22,16 @@ class FtpConn:
         self.ftp_pass = ftp_pass
 
     def ftp_conn(self, local_logger):
-        local_logger.info("ftp_conn")
+        local_logger.info("try ftp_conn")
         try:
             session = ftplib.FTP(self.ftp_host, self.ftp_user, self.ftp_pass, timeout=3)
+            local_logger.info("ftp conn OK")
             return session
         except ftplib.Error as e:
+            local_logger.exception(e)
             raise ftplib.Error(e)
         except socket.timeout as to:
+            local_logger.exception(to)
             raise socket.timeout()
 
 
@@ -121,8 +124,8 @@ def main():
     backup_ftp_dir = f"{HOSTNAME}-reoback"
 
     ftp_process = FtpConn(config_data['ftp_login']['ftp_host'],
-                       config_data['ftp_login']['ftp_user'],
-                       config_data['ftp_login']['ftp_pass'])
+                          config_data['ftp_login']['ftp_user'],
+                          config_data['ftp_login']['ftp_pass'])
 
     for item_arch in config_data['backup']:
         out_file = f"{backup_dir}{item_arch['name']}.tar.gz"
@@ -141,8 +144,9 @@ def main():
             logger.info(f"ERROR in {run_tar.stderr}")
             sys.exit(1)
         else:
-            ftp_process.ftp_conn(logger)
+            ftp_open_upload = ftp_process.ftp_conn(logger)
 
+            ftp_open_upload.close()
     try:
         f = open(nagios_file, "w")
         f.write(str(int(time.time())))
