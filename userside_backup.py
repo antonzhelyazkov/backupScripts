@@ -84,6 +84,11 @@ def main():
     for item_arch in config_data['backup']:
         out_file = f"{backup_dir}{item_arch['name']}.tar.gz"
         logger.info(f"out file {out_file}")
+        try:
+            os.makedirs(backup_dir, exist_ok=True)
+        except OSError as e:
+            logger.exception(f"#### {e}")
+            sys.exit(1)
 
     try:
         f = open(nagios_file, "w")
