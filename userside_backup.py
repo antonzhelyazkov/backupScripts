@@ -39,8 +39,8 @@ def add_slash(directory):
     return dir_return
 
 
-def test_log(print_log):
-    print_log(f"test_log wqewerwer")
+def test_log(print_logq):
+    print_logq(f"test_log wqewerwer")
 
 
 def main():
