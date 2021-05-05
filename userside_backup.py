@@ -13,6 +13,10 @@ def add_slash(directory):
     return dir_return
 
 
+def test_log(log_function):
+    log_function.info("asdasd")
+
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -46,7 +50,8 @@ def main():
     else:
         logger.addHandler(file_handler)
 
-    logger.info("qweqwe")
+    # logger.info("qweqwe")
+    test_log(logger)
 
 
 if __name__ == "__main__":
