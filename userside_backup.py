@@ -1,8 +1,10 @@
 import argparse
+import ftplib
 import json
 import logging
 import os
 import socket
+import subprocess
 import sys
 import time
 
@@ -13,12 +15,38 @@ class PidFileExists(Exception):
     pass
 
 
+class FtpConn:
+    def __init__(self, ftp_host, ftp_user, ftp_pass):
+        self.ftp_host = ftp_host
+        self.ftp_user = ftp_user
+        self.ftp_pass = ftp_pass
+
+    def ftp_conn(self, local_logger):
+        local_logger.info("ftp_conn")
+        try:
+            session = ftplib.FTP(self.ftp_host, self.ftp_user, self.ftp_pass, timeout=3)
+            return session
+        except ftplib.Error as e:
+            raise ftplib.Error(e)
+        except socket.timeout as to:
+            raise socket.timeout()
+
+
 def add_slash(directory):
     if not directory.endswith("/"):
         dir_return = directory + "/"
     else:
         dir_return = directory
     return dir_return
+
+
+def remove_slash(directory):
+    if directory.endswith("/"):
+        size = len(directory)
+        dir_return = directory[:size - 1]
+        return dir_return
+    else:
+        return directory
 
 
 def process_pid_file(pid_f: str) -> bool:
@@ -32,6 +60,17 @@ def process_pid_file(pid_f: str) -> bool:
             return True
         except IOError as e:
             raise IOError(e)
+
+
+def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
+    tar_arr = ["/usr/bin/tar", "-cf", out_file, "-I", "pigz"]
+    if len(excludes) > 0:
+        for item_exclude in excludes:
+            tar_arr.extend([f"--exclude={remove_slash(item_exclude)}"])
+
+    tar_arr.append(arch_dir)
+
+    return tar_arr
 
 
 def main():
@@ -81,6 +120,10 @@ def main():
     backup_dir = f"{add_slash(config_data['tmp_dir'])}{str(backup_stamp)}/"
     backup_ftp_dir = f"{HOSTNAME}-reoback"
 
+    ftp_process = FtpConn(config_data['ftp_login']['ftp_host'],
+                       config_data['ftp_login']['ftp_user'],
+                       config_data['ftp_login']['ftp_pass'])
+
     for item_arch in config_data['backup']:
         out_file = f"{backup_dir}{item_arch['name']}.tar.gz"
         logger.info(f"out file {out_file}")
@@ -89,6 +132,16 @@ def main():
         except OSError as e:
             logger.exception(f"#### {e}")
             sys.exit(1)
+
+        tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], out_file)
+        run_tar = subprocess.run(tar_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if run_tar.returncode != 0:
+            logger.info(f"ERROR in {item_arch['path']}")
+            logger.info(f"ERROR in {run_tar.stderr}")
+            sys.exit(1)
+        else:
+            ftp_process.ftp_conn(logger)
 
     try:
         f = open(nagios_file, "w")
