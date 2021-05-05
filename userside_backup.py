@@ -33,6 +33,9 @@ class FtpConn:
         except socket.timeout as to:
             local_logger.exception(to)
             raise socket.timeout()
+        except OSError as oe:
+            local_logger.exception(oe)
+            raise OSError
 
 
 def add_slash(directory):
