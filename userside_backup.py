@@ -9,7 +9,9 @@ class PrintLog:
     def __init__(self, log_file):
         self.log_file = log_file
 
-    def log(self, verbose: bool, msg: str):
+    def log(self, **kwargs):
+        verbose = kwargs['verbose']
+        msg = kwargs['msg']
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.DEBUG)
 
@@ -39,8 +41,8 @@ def add_slash(directory):
     return dir_return
 
 
-def test_log(print_logq):
-    print_logq(f"test_log wqewerwer")
+def test_log(print_log):
+    print_log(f"test_log wqewerwer")
 
 
 def main():
@@ -59,9 +61,10 @@ def main():
     log_file = f"{add_slash(config_data['log_dir'])}{script_name[0]}.log"
 
     print_log = PrintLog(log_file)
-    print_log.log(verbose, f"test msg")
+    print_log.log(verbose=verbose, msg=f"test msg")
 
-    # test_log(lambda msg: print_log.log(verbose, msg))
+    test_log(lambda msg: print_log.log(verbose=verbose, msg=msg))
+
 
 if __name__ == "__main__":
     main()
