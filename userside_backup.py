@@ -63,7 +63,7 @@ def process_pid_file(pid_f: str) -> bool:
 
 
 def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
-    tar_arr = ["/usr/bin/tar", "-cf", out_file, "-I", "pigz"]
+    tar_arr = ["tar", "-cf", out_file, "-I", "pigz"]
     if len(excludes) > 0:
         for item_exclude in excludes:
             tar_arr.extend([f"--exclude={remove_slash(item_exclude)}"])
