@@ -61,7 +61,7 @@ def main():
     print_log = PrintLog(log_file)
     print_log.log(verbose, f"test msg")
 
-    test_log(lambda msg: print_log.log(verbose, msg))
+    # test_log(lambda msg: print_log.log(verbose, msg))
 
 if __name__ == "__main__":
     main()
