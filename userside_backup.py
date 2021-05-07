@@ -54,7 +54,6 @@ class FtpConn:
             try:
                 session.mkd(directory)
             except ftplib.error_perm as perm:
-                local_logger.exception(perm)
                 pass
             except ftplib.Error as e:
                 local_logger.exception(e)
