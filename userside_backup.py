@@ -62,6 +62,7 @@ class FtpConn:
         file_fh = open(file, "rb")
         try:
             session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=10000000)
+            local_logger.info(f"file {dir_stamp}/{f_name} uploaded")
             return True
         except ftplib.Error as e:
             return False
@@ -70,20 +71,21 @@ class FtpConn:
 
     def ftp_backup_rotate(self, remote_dir: str, days_rotate: int, backup_stamp: int,
                           local_logger, session):
-        local_logger(f"start rotate")
+        local_logger.info(f"start rotate")
         seconds_minus = days_rotate * 86400
         stamp_before = backup_stamp - seconds_minus
 
         try:
-            local_logger(f"try mlsd")
+            local_logger.info(f"try mlsd")
             ftp_dirs = session.mlsd(path=remote_dir)
         except ftplib.Error as err_rotate:
-            local_logger(f"ERROR mlsd")
+            local_logger.info(f"ERROR mlsd")
             raise ErrFtpRotate(err_rotate)
         except socket.timeout as st:
-            local_logger(f"socket {st}")
+            local_logger.info(f"socket {st}")
             raise SocketTimeout(st)
 
+        local_logger.info(f"{ftp_dirs}")
         dirs_arr = []
         for (name, facts) in ftp_dirs:
             if name in ['.', '..']:
@@ -217,7 +219,7 @@ def main():
     ftp_process.ftp_backup_rotate(backup_ftp_dir,
                                   config_data['ftp_backup_rotate'],
                                   backup_stamp,
-                                  lambda msg: logger.info(msg),
+                                  logger,
                                   ftp_open_rotate)
     ftp_open_rotate.quit()
     try:
