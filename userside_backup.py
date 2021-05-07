@@ -177,6 +177,43 @@ def pg_archive(dst_dir: str):
         return dst_file
 
 
+def remove_local_dir(directory: str) -> bool:
+    files_arr = os.listdir(directory)
+    for item in files_arr:
+        file_to_remove = f"{directory}/{item}"
+        try:
+            os.remove(file_to_remove)
+        except OSError as e:
+            return False
+
+    try:
+        os.rmdir(directory)
+        return True
+    except OSError as e:
+        return False
+
+
+def remove_local_backups(days_rotate: int, backup_dir: str, backup_stamp: int, local_logger) -> bool:
+    seconds_minus = days_rotate * 86400
+    stamp_before = backup_stamp - seconds_minus
+
+    dirs_arr = os.listdir(backup_dir)
+    dirs_to_process = []
+    for item in dirs_arr:
+        if re.match("^\d{10}$", item):
+            dirs_to_process.append(item)
+
+    for item in dirs_to_process:
+        if int(item) < stamp_before:
+            dir_to_remove = f"{backup_dir}{item}"
+            if remove_local_dir(dir_to_remove):
+                local_logger.info(f"directory {dir_to_remove} removed")
+            else:
+                local_logger.info(f"directory {dir_to_remove} NOT removed")
+                return False
+    return True
+
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -281,6 +318,12 @@ def main():
         logger.exception(so_t)
         sys.exit(1)
     ftp_open_rotate.quit()
+
+    if not remove_local_backups(config_data['local_backup_rotate'],
+                                add_slash(config_data['tmp_dir']),
+                                backup_stamp,
+                                logger):
+        sys.exit(1)
 
     try:
         f = open(nagios_file, "w")
