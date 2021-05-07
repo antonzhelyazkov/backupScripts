@@ -3,6 +3,7 @@ import ftplib
 import json
 import logging
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -12,6 +13,14 @@ HOSTNAME = socket.gethostname().split(".")[0]
 
 
 class PidFileExists(Exception):
+    pass
+
+
+class ErrFtpRotate(Exception):
+    pass
+
+
+class SocketTimeout(Exception):
     pass
 
 
@@ -45,8 +54,10 @@ class FtpConn:
             try:
                 session.mkd(directory)
             except ftplib.error_perm as perm:
+                local_logger.exception(perm)
                 pass
             except ftplib.Error as e:
+                local_logger.exception(e)
                 raise ftplib.Error(e)
 
         file_fh = open(file, "rb")
@@ -57,6 +68,33 @@ class FtpConn:
             return False
         finally:
             file_fh.close()
+
+    def ftp_backup_rotate(self, remote_dir: str, days_rotate: int, backup_stamp: int,
+                          local_logger, session):
+        local_logger(f"start rotate")
+        seconds_minus = days_rotate * 86400
+        stamp_before = backup_stamp - seconds_minus
+
+        try:
+            local_logger(f"try mlsd")
+            ftp_dirs = session.mlsd(path=remote_dir)
+        except ftplib.Error as err_rotate:
+            local_logger(f"ERROR mlsd")
+            raise ErrFtpRotate(err_rotate)
+        except socket.timeout as st:
+            local_logger(f"socket {st}")
+            raise SocketTimeout(st)
+
+        dirs_arr = []
+        for (name, facts) in ftp_dirs:
+            if name in ['.', '..']:
+                continue
+            elif facts['type'] == 'dir' and re.match("^\d{10}$", name):
+                dirs_arr.append(name)
+
+        for item in dirs_arr:
+            if int(item) < stamp_before:
+                print(item)
 
 
 def add_slash(directory):
@@ -174,7 +212,15 @@ def main():
                                    backup_stamp,
                                    ftp_open_upload,
                                    logger)
-            ftp_open_upload.close()
+            ftp_open_upload.quit()
+
+    ftp_open_rotate = ftp_process.ftp_conn(logger)
+    ftp_process.ftp_backup_rotate(backup_ftp_dir,
+                                  config_data['ftp_backup_rotate'],
+                                  backup_stamp,
+                                  lambda msg: logger.info(msg),
+                                  ftp_open_rotate)
+    ftp_open_rotate.quit()
     try:
         f = open(nagios_file, "w")
         f.write(str(int(time.time())))
