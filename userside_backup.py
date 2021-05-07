@@ -95,7 +95,29 @@ class FtpConn:
 
         for item in dirs_arr:
             if int(item) < stamp_before:
-                print(item)
+                dir_to_remove = f"{remote_dir}/{item}"
+                self.ftp_dir_remove(session, dir_to_remove, local_logger)
+
+    def ftp_dir_remove(self, session, path_q: str, local_logger):
+        mlsd_facts = session.mlsd(path=path_q)
+        for (name, facts) in mlsd_facts:
+            if name in ['.', '..']:
+                continue
+            elif facts['type'] == 'file':
+                try:
+                    local_logger.info(f"trying to delete {path_q}/{name}")
+                    session.delete(f"{path_q}/{name}")
+                except ftplib.Error as e:
+                    local_logger.info(f"ERROR {e}")
+                except socket.timeout as to:
+                    local_logger.info(f"ERROR {to}")
+            elif facts['type'] == 'dir':
+                self.ftp_dir_remove(session, f"{path_q}/{name}", local_logger)
+
+        try:
+            session.rmd(path_q)
+        except ftplib.Error as e:
+            raise ftplib.Error(e)
 
 
 def add_slash(directory):
