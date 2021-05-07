@@ -254,10 +254,18 @@ def main():
             ftp_open_upload.quit()
 
     try:
-        pg_archive(backup_dir)
+        pg_file = pg_archive(backup_dir)
     except PgDump as pg_d:
         logger.exception(pg_d)
         sys.exit(1)
+
+    ftp_open_pg = ftp_process.ftp_conn(logger)
+    ftp_process.ftp_upload(pg_file,
+                           backup_ftp_dir,
+                           backup_stamp,
+                           ftp_open_pg,
+                           logger)
+    ftp_open_pg.quit()
 
     ftp_open_rotate = ftp_process.ftp_conn(logger)
     try:
