@@ -50,7 +50,7 @@ class FtpConn:
             local_logger.exception(oe)
             raise OSError
 
-    def ftp_upload(self, file: str, remote_dir: str, backup_stamp: int, session, local_logger) -> bool:
+    def ftp_upload(self, file, remote_dir: str, backup_stamp: int, session, local_logger) -> bool:
         f_name = os.path.basename(file)
         dir_stamp = f"{remote_dir}/{backup_stamp}"
 
