@@ -24,6 +24,10 @@ class SocketTimeout(Exception):
     pass
 
 
+class PgDump(Exception):
+    pass
+
+
 class FtpConn:
     def __init__(self, ftp_host, ftp_user, ftp_pass):
         self.ftp_host = ftp_host
@@ -167,7 +171,10 @@ def pg_archive(dst_dir: str):
     with open(dst_file, "wb") as outfile:
         process = subprocess.run(pg_dump_cmd, stdout=outfile)
 
-    print(process.returncode)
+    if process.returncode != 0:
+        raise PgDump(process.returncode)
+    else:
+        return outfile
 
 
 def main():
@@ -246,7 +253,11 @@ def main():
                                    logger)
             ftp_open_upload.quit()
 
-    pg_archive(backup_dir)
+    try:
+        pg_archive(backup_dir)
+    except PgDump as pg_d:
+        logger.exception(pg_d)
+        sys.exit(1)
 
     ftp_open_rotate = ftp_process.ftp_conn(logger)
     try:
