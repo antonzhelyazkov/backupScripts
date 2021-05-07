@@ -37,6 +37,27 @@ class FtpConn:
             local_logger.exception(oe)
             raise OSError
 
+    def ftp_upload(self, file: str, remote_dir: str, backup_stamp: int, session, local_logger) -> bool:
+        f_name = os.path.basename(file)
+        dir_stamp = f"{remote_dir}/{backup_stamp}"
+
+        for directory in (remote_dir, dir_stamp):
+            try:
+                session.mkd(directory)
+            except ftplib.error_perm as perm:
+                pass
+            except ftplib.Error as e:
+                raise ftplib.Error(e)
+
+        file_fh = open(file, "rb")
+        try:
+            session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=10000000)
+            return True
+        except ftplib.Error as e:
+            return False
+        finally:
+            file_fh.close()
+
 
 def add_slash(directory):
     if not directory.endswith("/"):
@@ -148,7 +169,11 @@ def main():
             sys.exit(1)
         else:
             ftp_open_upload = ftp_process.ftp_conn(logger)
-
+            ftp_process.ftp_upload(out_file,
+                                   backup_ftp_dir,
+                                   backup_stamp,
+                                   ftp_open_upload,
+                                   logger)
             ftp_open_upload.close()
     try:
         f = open(nagios_file, "w")
