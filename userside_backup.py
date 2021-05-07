@@ -161,6 +161,11 @@ def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
     return tar_arr
 
 
+def pg_archive(dst_dir: str):
+    print(dst_dir)
+    pass
+
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -236,6 +241,8 @@ def main():
                                    ftp_open_upload,
                                    logger)
             ftp_open_upload.quit()
+
+    pg_archive(backup_dir)
 
     ftp_open_rotate = ftp_process.ftp_conn(logger)
     try:
