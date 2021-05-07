@@ -238,12 +238,20 @@ def main():
             ftp_open_upload.quit()
 
     ftp_open_rotate = ftp_process.ftp_conn(logger)
-    ftp_process.ftp_backup_rotate(backup_ftp_dir,
-                                  config_data['ftp_backup_rotate'],
-                                  backup_stamp,
-                                  logger,
-                                  ftp_open_rotate)
+    try:
+        ftp_process.ftp_backup_rotate(backup_ftp_dir,
+                                      config_data['ftp_backup_rotate'],
+                                      backup_stamp,
+                                      logger,
+                                      ftp_open_rotate)
+    except ErrFtpRotate as err_ftp:
+        logger.exception(err_ftp)
+        sys.exit(1)
+    except SocketTimeout as so_t:
+        logger.exception(so_t)
+        sys.exit(1)
     ftp_open_rotate.quit()
+
     try:
         f = open(nagios_file, "w")
         f.write(str(int(time.time())))
