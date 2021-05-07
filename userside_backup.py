@@ -164,9 +164,10 @@ def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
 def pg_archive(dst_dir: str):
     pg_dump_cmd = ['sudo', '-u', 'postgres', 'pg_dump', '--no-acl', '-Fp', '-Z', '5', 'userside']
     dst_file = f"{dst_dir}userside.sql.gz"
-    print(dst_file)
     with open(dst_file, "wb") as outfile:
-        subprocess.run(pg_dump_cmd, stdout=outfile)
+        process = subprocess.run(pg_dump_cmd, stdout=outfile)
+
+    print(process.returncode)
 
 
 def main():
