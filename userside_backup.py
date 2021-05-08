@@ -37,7 +37,7 @@ class FtpConn:
     def ftp_conn(self, local_logger):
         local_logger.info("try ftp_conn")
         try:
-            session = ftplib.FTP(self.ftp_host, self.ftp_user, self.ftp_pass, timeout=3)
+            session = ftplib.FTP(self.ftp_host, self.ftp_user, self.ftp_pass, timeout=30)
             local_logger.info("ftp conn OK")
             return session
         except ftplib.Error as e:
