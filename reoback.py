@@ -9,16 +9,10 @@ import subprocess
 import sys
 import time
 
-import pycurl
-
 HOSTNAME = socket.gethostname().split(".")[0]
 
 
 class PidFileExists(Exception):
-    pass
-
-
-class DirectoryMissing(Exception):
     pass
 
 
@@ -28,6 +22,106 @@ class ErrFtpRotate(Exception):
 
 class SocketTimeout(Exception):
     pass
+
+
+class PgDump(Exception):
+    pass
+
+
+class FtpConn:
+    def __init__(self, ftp_host, ftp_user, ftp_pass):
+        self.ftp_host = ftp_host
+        self.ftp_user = ftp_user
+        self.ftp_pass = ftp_pass
+
+    def ftp_conn(self, local_logger):
+        local_logger.info("try ftp_conn")
+        try:
+            session = ftplib.FTP(self.ftp_host, self.ftp_user, self.ftp_pass, timeout=3)
+            local_logger.info("ftp conn OK")
+            return session
+        except ftplib.Error as e:
+            local_logger.exception(e)
+            raise ftplib.Error(e)
+        except socket.timeout as to:
+            local_logger.exception(to)
+            raise socket.timeout()
+        except OSError as oe:
+            local_logger.exception(oe)
+            raise OSError
+
+    def ftp_upload(self, file: str, remote_dir: str, backup_stamp: int, session, local_logger) -> bool:
+        f_name = os.path.basename(file)
+        dir_stamp = f"{remote_dir}/{backup_stamp}"
+
+        for directory in (remote_dir, dir_stamp):
+            try:
+                session.mkd(directory)
+            except ftplib.error_perm as perm:
+                pass
+            except ftplib.Error as e:
+                local_logger.exception(e)
+                raise ftplib.Error(e)
+
+        file_fh = open(file, "rb")
+        try:
+            session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=10000000)
+            local_logger.info(f"file {dir_stamp}/{f_name} uploaded")
+            return True
+        except ftplib.Error as e:
+            return False
+        finally:
+            file_fh.close()
+
+    def ftp_backup_rotate(self, remote_dir: str, days_rotate: int, backup_stamp: int,
+                          local_logger, session):
+        local_logger.info(f"start rotate")
+        seconds_minus = days_rotate * 0
+        stamp_before = backup_stamp - seconds_minus
+
+        try:
+            local_logger.info(f"try mlsd")
+            ftp_dirs = session.mlsd(path=remote_dir)
+        except ftplib.Error as err_rotate:
+            local_logger.info(f"ERROR mlsd")
+            raise ErrFtpRotate(err_rotate)
+        except socket.timeout as st:
+            local_logger.info(f"socket {st}")
+            raise SocketTimeout(st)
+
+        local_logger.info(f"{ftp_dirs}")
+        dirs_arr = []
+        for (name, facts) in ftp_dirs:
+            if name in ['.', '..']:
+                continue
+            elif facts['type'] == 'dir' and re.match("^\d{10}$", name):
+                dirs_arr.append(name)
+
+        for item in dirs_arr:
+            if int(item) < stamp_before:
+                dir_to_remove = f"{remote_dir}/{item}"
+                self.ftp_dir_remove(session, dir_to_remove, local_logger)
+
+    def ftp_dir_remove(self, session, path_q: str, local_logger):
+        mlsd_facts = session.mlsd(path=path_q)
+        for (name, facts) in mlsd_facts:
+            if name in ['.', '..']:
+                continue
+            elif facts['type'] == 'file':
+                try:
+                    local_logger.info(f"trying to delete {path_q}/{name}")
+                    session.delete(f"{path_q}/{name}")
+                except ftplib.Error as e:
+                    local_logger.info(f"ERROR {e}")
+                except socket.timeout as to:
+                    local_logger.info(f"ERROR {to}")
+            elif facts['type'] == 'dir':
+                self.ftp_dir_remove(session, f"{path_q}/{name}", local_logger)
+
+        try:
+            session.rmd(path_q)
+        except ftplib.Error as e:
+            raise ftplib.Error(e)
 
 
 def add_slash(directory):
@@ -60,18 +154,8 @@ def process_pid_file(pid_f: str) -> bool:
             raise IOError(e)
 
 
-def check_dirs_exist(dirs: list):
-    err_dirs = []
-    for item in dirs:
-        if not os.path.isdir(item):
-            err_dirs.append(item)
-
-    if len(err_dirs) > 0:
-        raise DirectoryMissing(err_dirs)
-
-
 def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
-    tar_arr = ["/usr/bin/tar", "-cf", out_file, "-I", "pigz"]
+    tar_arr = ["tar", "-cf", out_file, "-I", "pigz"]
     if len(excludes) > 0:
         for item_exclude in excludes:
             tar_arr.extend([f"--exclude={remove_slash(item_exclude)}"])
@@ -79,125 +163,6 @@ def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
     tar_arr.append(arch_dir)
 
     return tar_arr
-
-
-def ftp_session(ftp_host: str, ftp_user: str, ftp_pass: str, print_local):
-    try:
-        print_local(f"session start")
-        session = ftplib.FTP(ftp_host, ftp_user, ftp_pass, timeout=3)
-        return session
-    except ftplib.Error as e:
-        print_local(f"session {e}")
-        raise ftplib.Error(e)
-    except socket.timeout as to:
-        print_local(f"session {to}")
-        raise socket.timeout()
-
-
-# def ftp_dir_remove(session, path_q: str, print_local):
-#     mlsd_facts = session.mlsd(path=path_q)
-#     for (name, facts) in mlsd_facts:
-#         if name in ['.', '..']:
-#             continue
-#         elif facts['type'] == 'file':
-#             try:
-#                 print_local(f"trying to delete {path_q}/{name}")
-#                 session.delete(f"{path_q}/{name}")
-#             except ftplib.Error as e:
-#                 print_local(f"ERROR {e}")
-#             except socket.timeout as to:
-#                 print_local(f"ERROR {to}")
-#         elif facts['type'] == 'dir':
-#             ftp_dir_remove(session, f"{path_q}/{name}", print_local)
-#
-#     try:
-#         session.rmd(path_q)
-#     except ftplib.Error as e:
-#         raise ftplib.Error(e)
-
-
-def ftp_dir_remove(session, path_q: str, print_local, ftp_host, ftp_user, ftp_pass):
-    mlsd_facts = session.mlsd(path=path_q)
-    for (name, facts) in mlsd_facts:
-        if name in ['.', '..']:
-            continue
-        elif facts['type'] == 'file':
-            try:
-                print_local(f"trying to delete {path_q}/{name}")
-                # session.delete(f"{path_q}/{name}")
-                c = pycurl.Curl()
-                c.setopt(pycurl.VERBOSE, 0)
-                c.setopt(pycurl.URL, f'ftp://{ftp_host}')
-                c.setopt(pycurl.USERPWD, f'{ftp_user}:{ftp_pass}')
-                c.setopt(pycurl.QUOTE, [f'DELE {path_q}/{name}'])
-                c.perform()
-                c.close()
-            except ftplib.Error as e:
-                print_local(f"ERROR {e}")
-            except pycurl.error as to:
-                print_local(f"ERROR {to}")
-        elif facts['type'] == 'dir':
-            ftp_dir_remove(session, f"{path_q}/{name}", print_local, ftp_host, ftp_user, ftp_pass)
-
-    try:
-        session.rmd(path_q)
-    except ftplib.Error as e:
-        raise ftplib.Error(e)
-
-
-def ftp_backup_rotate(session, remote_dir: str, days_rotate: int, backup_stamp: int,
-                      print_local, ftp_host, ftp_user, ftp_pass):
-    print_local(f"start rotate")
-    seconds_minus = days_rotate * 86400
-    stamp_before = backup_stamp - seconds_minus
-
-    try:
-        print_local(f"try mlsd")
-        ftp_dirs = session.mlsd(path=remote_dir)
-    except ftplib.Error as err_rotate:
-        print_local(f"ERROR mlsd")
-        raise ErrFtpRotate(err_rotate)
-    except socket.timeout as st:
-        print_local(f"socket {st}")
-        raise SocketTimeout(st)
-
-    dirs_arr = []
-    for (name, facts) in ftp_dirs:
-        if name in ['.', '..']:
-            continue
-        elif facts['type'] == 'dir' and re.match("^\d{10}$", name):
-            dirs_arr.append(name)
-
-    for item in dirs_arr:
-        if int(item) < stamp_before:
-            dir_to_remove = f"{remote_dir}/{item}"
-            try:
-                print_local(f"remove {dir_to_remove}")
-                ftp_dir_remove(session, dir_to_remove, print_local, ftp_host, ftp_user, ftp_pass)
-            except ftplib.Error as e:
-                raise ftplib.Error(e)
-
-
-def ftp_upload(file: str, remote_dir: str, backup_stamp: int, session) -> bool:
-    f_name = os.path.basename(file)
-    dir_stamp = f"{remote_dir}/{backup_stamp}"
-
-    for directory in (remote_dir, dir_stamp):
-        try:
-            session.mkd(directory)
-        except ftplib.error_perm as perm:
-            pass
-        except ftplib.Error as e:
-            raise ftplib.Error(e)
-
-    file_fh = open(file, "rb")
-    try:
-        session.storbinary(f"STOR {dir_stamp}/{f_name}", file_fh, blocksize=10000000)
-        return True
-    except ftplib.Error as e:
-        return False
-    finally:
-        file_fh.close()
 
 
 def remove_local_dir(directory: str) -> bool:
@@ -216,7 +181,7 @@ def remove_local_dir(directory: str) -> bool:
         return False
 
 
-def remove_local_backups(days_rotate: int, backup_dir: str, backup_stamp: int) -> bool:
+def remove_local_backups(days_rotate: int, backup_dir: str, backup_stamp: int, local_logger) -> bool:
     seconds_minus = days_rotate * 86400
     stamp_before = backup_stamp - seconds_minus
 
@@ -229,9 +194,11 @@ def remove_local_backups(days_rotate: int, backup_dir: str, backup_stamp: int) -
     for item in dirs_to_process:
         if int(item) < stamp_before:
             dir_to_remove = f"{backup_dir}{item}"
-            if not remove_local_dir(dir_to_remove):
+            if remove_local_dir(dir_to_remove):
+                local_logger.info(f"directory {dir_to_remove} removed")
+            else:
+                local_logger.info(f"directory {dir_to_remove} NOT removed")
                 return False
-
     return True
 
 
@@ -239,9 +206,11 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-c', '--config', type=str, required=True, help="Path to config file", dest='config')
+    parser.add_argument('-v', '--verbose', required=False, action='store_true', dest='verbose')
 
     args_cmd = parser.parse_args()
     config_file = args_cmd.config
+    verbose = args_cmd.verbose
 
     config_open = open(config_file, encoding='utf-8')
     config_data = json.load(config_open)
@@ -260,7 +229,11 @@ def main():
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
 
-    logger.addHandler(file_handler)
+    if verbose:
+        logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
+    else:
+        logger.addHandler(file_handler)
 
     pid_file = f"{add_slash(config_data['pid_file_path'])}{script_name[0]}.pid"
     nagios_file = f"{add_slash(config_data['pid_file_path'])}{script_name[0]}.nagios"
@@ -272,78 +245,58 @@ def main():
     except OSError as e:
         logger.exception(f"#### {e}")
 
-    dirs_exists = [config_data['tmp_dir'], config_data['log_dir'], config_data['pid_file_path']]
-    dirs_to_archive = []
-    for item_dir in config_data['backup']:
-        dirs_exists.append(item_dir['path'])
-        dirs_to_archive.append(item_dir['path'])
-    try:
-        check_dirs_exist(dirs_exists)
-    except DirectoryMissing as e:
-        logger.exception(f"#### {e}")
-
-    if HOSTNAME is None or HOSTNAME == '':
-        logger.info(f"ERROR in hostname {HOSTNAME}")
-        sys.exit(1)
-
     backup_stamp = int(time.time())
     backup_dir = f"{add_slash(config_data['tmp_dir'])}{str(backup_stamp)}/"
     backup_ftp_dir = f"{HOSTNAME}-reoback"
 
+    ftp_process = FtpConn(config_data['ftp_login']['ftp_host'],
+                          config_data['ftp_login']['ftp_user'],
+                          config_data['ftp_login']['ftp_pass'])
+
     for item_arch in config_data['backup']:
         out_file = f"{backup_dir}{item_arch['name']}.tar.gz"
+        logger.info(f"out file {out_file}")
         try:
             os.makedirs(backup_dir, exist_ok=True)
         except OSError as e:
             logger.exception(f"#### {e}")
             sys.exit(1)
+
         tar_cmd = tar_command(item_arch['path'], item_arch['excludes'], out_file)
         run_tar = subprocess.run(tar_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
         if run_tar.returncode != 0:
             logger.info(f"ERROR in {item_arch['path']}")
             logger.info(f"ERROR in {run_tar.stderr}")
             sys.exit(1)
         else:
-            logger.info(f"INFO archive successful {out_file}")
-            ftp_open_upload = ftp_session(config_data['ftp_login']['ftp_host'],
-                                          config_data['ftp_login']['ftp_user'],
-                                          config_data['ftp_login']['ftp_pass'],
-                                          lambda msg: logger.info(msg))
-            ftp_upload(out_file,
-                       backup_ftp_dir,
-                       backup_stamp,
-                       ftp_open_upload)
-            logger.info(f"INFO upload successful {out_file}")
-            ftp_open_upload.close()
-            # ftp_open_upload.quit()
-    ftp_open_rotate = ftp_session(config_data['ftp_login']['ftp_host'],
-                                  config_data['ftp_login']['ftp_user'],
-                                  config_data['ftp_login']['ftp_pass'],
-                                  lambda msg: logger.info(msg))
-    logger.info(f"INFO trying to remove {backup_ftp_dir} {backup_stamp}")
+            ftp_open_upload = ftp_process.ftp_conn(logger)
+            ftp_process.ftp_upload(out_file,
+                                   backup_ftp_dir,
+                                   backup_stamp,
+                                   ftp_open_upload,
+                                   logger)
+            ftp_open_upload.quit()
+
+    ftp_open_rotate = ftp_process.ftp_conn(logger)
     try:
-        ftp_backup_rotate(ftp_open_rotate,
-                          backup_ftp_dir,
-                          config_data['ftp_backup_rotate'],
-                          backup_stamp,
-                          lambda msg: logger.info(msg),
-                          config_data['ftp_login']['ftp_host'],
-                          config_data['ftp_login']['ftp_user'],
-                          config_data['ftp_login']['ftp_pass'])
-        logger.info(f"INFO all backups older than {config_data['ftp_backup_rotate']} are removed")
-        ftp_open_rotate.quit()
-    except ftplib.Error as err_rotate:
-        logger.exception(f"@@@@@@@@@@@@@@@ {err_rotate}")
-    except ErrFtpRotate as err_mlsd:
-        logger.exception(f"$$$$$$$$$$$$$$$ {err_mlsd}")
+        ftp_process.ftp_backup_rotate(backup_ftp_dir,
+                                      config_data['ftp_backup_rotate'],
+                                      backup_stamp,
+                                      logger,
+                                      ftp_open_rotate)
+    except ErrFtpRotate as err_ftp:
+        logger.exception(err_ftp)
         sys.exit(1)
-    except SocketTimeout as s_to:
-        logger.exception(f"SOCKET {s_to}")
+    except SocketTimeout as so_t:
+        logger.exception(so_t)
         sys.exit(1)
+    ftp_open_rotate.quit()
 
     if not remove_local_backups(config_data['local_backup_rotate'],
                                 add_slash(config_data['tmp_dir']),
-                                backup_stamp):
+                                backup_stamp,
+                                logger):
         sys.exit(1)
 
     try:
