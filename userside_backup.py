@@ -76,7 +76,7 @@ class FtpConn:
     def ftp_backup_rotate(self, remote_dir: str, days_rotate: int, backup_stamp: int,
                           local_logger, session):
         local_logger.info(f"start rotate")
-        seconds_minus = days_rotate * 0
+        seconds_minus = days_rotate * 86400
         stamp_before = backup_stamp - seconds_minus
 
         try:
