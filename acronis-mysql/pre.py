@@ -15,10 +15,8 @@ def main():
     config_file = args_cmd.config
     verbose = args_cmd.verbose
 
-    print(verbose)
-
     with open(LOG_FILE, "w") as log_file:
-        log_file.write("test1")
+        log_file.write("test11212")
 
 
 if __name__ == "__main__":
