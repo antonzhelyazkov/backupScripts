@@ -6,7 +6,13 @@ DST_DIR_TABLES=$DST_DIR"/"$MY_DATABASE
 LOG_FILE="/var/log/acronis_pre.log"
 
 echo "$(date +'%Y/%m/%d %H:%M:%S')" "START" >> $LOG_FILE
-mkdir -p "$DST_DIR_TABLES"
+if [ -d $DST_DIR ]
+then
+    echo "$(date +'%Y/%m/%d %H:%M:%S')" "Directory $DST_DIR exists. Trying to remove" >> $LOG_FILE
+    rm -rf $DST_DIR
+else
+    mkdir -p "$DST_DIR_TABLES"
+fi
 
 for TABLE in $(mysql -N -B -e "show tables from $MY_DATABASE");
 do
