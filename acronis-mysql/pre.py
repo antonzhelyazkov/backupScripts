@@ -46,6 +46,10 @@ def main():
 
     logger.info(database)
 
+    backup_destination = "{0}{1}.sql".format(add_slash(DIR_TO_BACKUP), database)
+    dump_cmd = ['mysqldump', '-B', database, '|', 'pigz', '>', backup_destination]
+    logger.info(dump_cmd)
+
 
 if __name__ == "__main__":
     main()
