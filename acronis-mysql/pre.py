@@ -52,7 +52,7 @@ def main():
     run_mysqldump = subprocess.run(dump_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if run_mysqldump.returncode != 0:
-        logger.info(f"ERROR in {run_mysqldump.stderr}")
+        logger.info("ERROR in {0}".format(run_mysqldump.stderr))
         sys.exit(1)
 
 
