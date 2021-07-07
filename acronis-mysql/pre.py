@@ -8,7 +8,7 @@ DEF_EXTRA_FILE = "/root/my.cnf"
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-c', '--config', type=str, required=True, help="Path to config file", dest='config')
+    parser.add_argument('-c', '--config', type=str, required=False, help="Path to config file", dest='config')
     parser.add_argument('-v', '--verbose', required=False, action='store_true', dest='verbose')
 
     args_cmd = parser.parse_args()
