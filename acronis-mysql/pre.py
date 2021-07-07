@@ -13,7 +13,7 @@ def main():
     args_cmd = parser.parse_args()
     database = args_cmd.database
 
-    with open(LOG_FILE, "w") as log_file:
+    with open(LOG_FILE, "a") as log_file:
         log_file.write(database)
 
 
