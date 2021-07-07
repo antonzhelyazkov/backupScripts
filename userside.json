@@ -1,0 +1,24 @@
+
+{
+  "tmp_dir": "/mnt/store/userside",
+  "log_dir": "/var/log/",
+  "pid_file_path": "/root/",
+  "ftp_backup_rotate": 6,
+  "local_backup_rotate": 1,
+  "ftp_login": {
+    "ftp_host": "10.10.10.10",
+    "ftp_user": "reoback",
+    "ftp_pass": "topsercret",
+    "ftp_port": 21
+  },
+  "backup": [
+    {
+      "name": "first_test",
+      "path": "/etc",
+      "excludes": [
+        "/etc/cron.d",
+        "/etc/sudoers.d/"
+      ]
+    }
+  ]
+}

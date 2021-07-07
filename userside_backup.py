@@ -165,6 +165,18 @@ def tar_command(arch_dir: str, excludes: list, out_file: str) -> list:
     return tar_arr
 
 
+def pg_archive(dst_dir: str):
+    pg_dump_cmd = ['sudo', '-u', 'postgres', 'pg_dump', '--no-acl', '-Fp', '-Z', '5', 'userside']
+    dst_file = f"{dst_dir}userside.sql.gz"
+    with open(dst_file, "wb") as outfile:
+        process = subprocess.run(pg_dump_cmd, stdout=outfile)
+
+    if process.returncode != 0:
+        raise PgDump(process.returncode)
+    else:
+        return dst_file
+
+
 def remove_local_dir(directory: str) -> bool:
     files_arr = os.listdir(directory)
     for item in files_arr:
@@ -277,6 +289,20 @@ def main():
                                    ftp_open_upload,
                                    logger)
             ftp_open_upload.quit()
+
+    try:
+        pg_file = pg_archive(backup_dir)
+    except PgDump as pg_d:
+        logger.exception(pg_d)
+        sys.exit(1)
+
+    ftp_open_pg = ftp_process.ftp_conn(logger)
+    ftp_process.ftp_upload(pg_file,
+                           backup_ftp_dir,
+                           backup_stamp,
+                           ftp_open_pg,
+                           logger)
+    ftp_open_pg.quit()
 
     ftp_open_rotate = ftp_process.ftp_conn(logger)
     try:
