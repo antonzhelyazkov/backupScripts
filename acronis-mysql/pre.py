@@ -37,21 +37,21 @@ def main():
     if not os.path.isdir(DIR_TO_BACKUP):
         try:
             os.makedirs(DIR_TO_BACKUP)
-            logger.info("INFO directory {0} created".format(DIR_TO_BACKUP))
+            logger.info(f"INFO directory {DIR_TO_BACKUP} created")
         except OSError as e:
-            logger.info("ERROR could not create directory {0}".format(e))
+            logger.info(f"ERROR could not create directory {e}")
             sys.exit(1)
     else:
-        logger.info("INFO directory exists {0}".format(DIR_TO_BACKUP))
+        logger.info(f"INFO directory exists {DIR_TO_BACKUP}")
 
     logger.info(database)
 
-    backup_destination = "{0}{1}.sql".format(add_slash(DIR_TO_BACKUP), database)
+    backup_destination = f"{add_slash(DIR_TO_BACKUP)}{database}.sql.gz"
     dump_cmd = ['mysqldump', '-B', database, '|', 'pigz', '>', backup_destination]
     run_mysqldump = subprocess.run(dump_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if run_mysqldump.returncode != 0:
-        logger.info("ERROR in {0}".format(run_mysqldump.stderr))
+        logger.info(f"ERROR in {run_mysqldump.stderr}")
         sys.exit(1)
 
 
