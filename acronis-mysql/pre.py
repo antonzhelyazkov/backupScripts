@@ -14,7 +14,7 @@ def main():
     database = args_cmd.database
 
     with open(LOG_FILE, "w") as log_file:
-        log_file.write(f"test11212 {database}")
+        log_file.write("test11212")
 
 
 if __name__ == "__main__":
