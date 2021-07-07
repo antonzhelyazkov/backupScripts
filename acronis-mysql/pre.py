@@ -5,7 +5,6 @@ import os
 import sys
 
 LOG_FILE = "/var/log/mysql_backup.log"
-DEF_EXTRA_FILE = "/root/my.cnf"
 DIR_TO_BACKUP = "/var/tmp/mysql_backup"
 
 
@@ -38,7 +37,7 @@ def main():
     if not os.path.isdir(DIR_TO_BACKUP):
         try:
             os.makedirs(DIR_TO_BACKUP)
-            logger.info(f"INFO directory {DIR_TO_BACKUP} created")
+            logger.info("INFO directory {0} created".format(DIR_TO_BACKUP))
         except OSError as e:
             logger.info(f"ERROR could not create directory {e}")
             sys.exit(1)
