@@ -47,7 +47,7 @@ def main():
     logger.info(database)
 
     backup_destination = f"{add_slash(DIR_TO_BACKUP)}{database}.sql.gz"
-    dump_cmd = ['mysqldump', '-B', database, '\|', 'pigz', '>', backup_destination]
+    dump_cmd = ['mysqldump', '-B', database, '>', backup_destination]
     run_mysqldump = subprocess.run(dump_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if run_mysqldump.returncode != 0:
