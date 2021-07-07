@@ -2,6 +2,7 @@
 import argparse
 import logging
 import os
+import subprocess
 import sys
 
 LOG_FILE = "/var/log/mysql_backup.log"
@@ -48,7 +49,11 @@ def main():
 
     backup_destination = "{0}{1}.sql".format(add_slash(DIR_TO_BACKUP), database)
     dump_cmd = ['mysqldump', '-B', database, '|', 'pigz', '>', backup_destination]
-    logger.info(dump_cmd)
+    run_mysqldump = subprocess.run(dump_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    if run_mysqldump.returncode != 0:
+        logger.info(f"ERROR in {run_mysqldump.stderr}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
