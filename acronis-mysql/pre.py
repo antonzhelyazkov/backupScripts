@@ -5,20 +5,16 @@ LOG_FILE = "/var/log/mysql_backup.log"
 DEF_EXTRA_FILE = "/root/my.cnf"
 
 
-#
-
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-c', '--config', type=str, required=False, help="Path to config file", dest='config')
-    parser.add_argument('-v', '--verbose', required=False, action='store_true', dest='verbose')
+    parser.add_argument('-d', '--database', type=str, required=True, help="Path to config file", dest='database')
 
     args_cmd = parser.parse_args()
-    config_file = args_cmd.config
-    verbose = args_cmd.verbose
+    database = args_cmd.database
 
     with open(LOG_FILE, "w") as log_file:
-        log_file.write("test11212")
+        log_file.write(f"test11212 {database}")
 
 
 if __name__ == "__main__":
