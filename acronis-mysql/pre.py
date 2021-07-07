@@ -39,10 +39,10 @@ def main():
             os.makedirs(DIR_TO_BACKUP)
             logger.info("INFO directory {0} created".format(DIR_TO_BACKUP))
         except OSError as e:
-            logger.info(f"ERROR could not create directory {e}")
+            logger.info("ERROR could not create directory {0}".format(e))
             sys.exit(1)
     else:
-        logger.info(f"INFO directory exists {DIR_TO_BACKUP}")
+        logger.info("INFO directory exists {0}".format(DIR_TO_BACKUP))
 
     logger.info(database)
 
