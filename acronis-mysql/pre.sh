@@ -10,10 +10,10 @@ if [ -d $DST_DIR ]
 then
     echo "$(date +'%Y/%m/%d %H:%M:%S')" "Directory $DST_DIR exists. Trying to remove" >> $LOG_FILE
     rm -rf $DST_DIR
-else
-    mkdir -p "$DST_DIR_TABLES"
-    echo "$(date +'%Y/%m/%d %H:%M:%S')" "Directory $DST_DIR_TABLES created" >> $LOG_FILE
 fi
+
+mkdir -p "$DST_DIR_TABLES"
+echo "$(date +'%Y/%m/%d %H:%M:%S')" "Directory $DST_DIR_TABLES created" >> $LOG_FILE
 
 for TABLE in $(mysql -N -B -e "show tables from $MY_DATABASE");
 do
