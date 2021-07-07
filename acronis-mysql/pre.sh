@@ -12,6 +12,7 @@ then
     rm -rf $DST_DIR
 else
     mkdir -p "$DST_DIR_TABLES"
+    echo "$(date +'%Y/%m/%d %H:%M:%S')" "Directory $DST_DIR_TABLES created" >> $LOG_FILE
 fi
 
 for TABLE in $(mysql -N -B -e "show tables from $MY_DATABASE");
