@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 MY_DATABASE="postone"
 DST_DIR="/var/tmp/mysql_backup"
