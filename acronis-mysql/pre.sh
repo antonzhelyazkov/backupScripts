@@ -5,6 +5,7 @@ DST_DIR="/var/tmp/mysql_backup"
 DST_DIR_TABLES=$DST_DIR"/"$MY_DATABASE
 LOG_FILE="/var/log/acronis_pre.log"
 
+touch "/tmp/acronis_mysql.lock"
 echo "$(date +'%Y/%m/%d %H:%M:%S')" "START" >> $LOG_FILE
 if [ -d $DST_DIR ]
 then
